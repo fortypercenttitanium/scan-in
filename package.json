@@ -1,0 +1,28 @@
+{
+  "name": "scan-in",
+  "version": "1.0.0",
+  "description": "An application to make taking class attendance faster and easier.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd client && npm run build && cd .. && node server/index.js",
+    "dev": "nodemon server/index && cd client && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fortypercenttitanium/scan-in.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fortypercenttitanium/scan-in/issues"
+  },
+  "homepage": "https://github.com/fortypercenttitanium/scan-in#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}
