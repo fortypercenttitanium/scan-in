@@ -6,6 +6,40 @@ const query = require('../db/query');
 
 require('dotenv').config();
 
+const GET_USER_BY_EMAIL = gql`
+  query findUserByEmail($email: String!) {
+    userByEmail(email: $email) {
+      id
+      firstName
+      lastName
+      email
+      classes {
+        students {
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+`;
+
+const GET_USER_BY_ID = gql`
+  query findUserById($id: ID!) {
+    userById(id: $id) {
+      id
+      firstName
+      lastName
+      email
+      classes {
+        students {
+          firstName
+          lastName
+        }
+      }
+    }
+  }
+`;
+
 const jwtOptions = {
   jwtFromRequest: getTokenFromCookie,
   secretOrKey: process.env.JWT_SECRET_KEY,
@@ -22,28 +56,8 @@ const microsoftStrategy = new MicrosoftStrategy(
     try {
       const { name, emails } = profile;
 
-      // build query
-      const GET_USER_BY_EMAIL = gql`
-        query findUserByEmail($email: String!) {
-          user(email: $email) {
-            id
-            firstName
-            lastName
-            email
-            classes {
-              students {
-                firstName
-                lastName
-              }
-            }
-          }
-        }
-      `;
-
       // find a user in the database
       let { user } = await query(GET_USER_BY_EMAIL, { email: emails[0].value });
-
-      console.log(user);
 
       // create a new user
       if (!user) {
@@ -75,7 +89,7 @@ const microsoftStrategy = new MicrosoftStrategy(
           }
         `;
 
-        query(mutation, user);
+        await query(mutation, user);
       }
 
       return done(null, user);

@@ -2,7 +2,8 @@ const { gql } = require('apollo-server');
 
 const typeDefs = gql`
   type Query {
-    user(email: String!): User
+    userByEmail(email: String!): User
+    userById(id: ID!): User
     classList: [Class]!
     studentList: [Student]!
   }

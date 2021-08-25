@@ -11,7 +11,7 @@ const db = admin.firestore();
 
 const resolvers = {
   Query: {
-    async user(parent, args) {
+    async userByEmail(parent, args) {
       const { email } = args;
       try {
         const users = await db.collection('users');
@@ -22,6 +22,22 @@ const resolvers = {
         }
 
         const user = snapshot.docs[0].data();
+        return user;
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
+    async userById(parent, args) {
+      const { id } = args;
+      try {
+        const users = await db.collection('users');
+        const snapshot = await users.doc(id).get();
+
+        if (!snapshot.data()) {
+          return null;
+        }
+
+        const user = snapshot.data();
         return user;
       } catch (err) {
         throw new ApolloError(err);
