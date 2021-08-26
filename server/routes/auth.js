@@ -40,6 +40,28 @@ router.delete('/logout', (req, res) => {
   res.clearCookie('scan_in_access_token').sendStatus(200);
 });
 
+router.delete(
+  '/user',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    const q = gql`
+      mutation deleteUser($id: ID!) {
+        deleteUser(id: $id) {
+          id
+        }
+      }
+    `;
+
+    const result = await query(q, { id: req.user.id });
+
+    if (result.deleteUser === null) {
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(400);
+    }
+  },
+);
+
 router.post(
   '/getUserData',
   passport.authenticate('jwt', {

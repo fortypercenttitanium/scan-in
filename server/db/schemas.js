@@ -16,6 +16,29 @@ const typeDefs = gql`
       id: ID!
       email: String!
     ): User
+    deleteUser(id: ID!): User
+    addClass(name: String!, id: ID!): Class
+    editClass(name: String, id: ID!): Class
+    deleteClass(id: ID!): User
+    addStudents(students: [StudentInput!]!): Class
+    editStudents(students: [StudentInput]!): Class
+    addLogEntry(
+      event: String!
+      timeStamp: String!
+      studentName: String
+      id: ID!
+      studentId: ID!
+      sessionId: ID!
+      teacherId: ID!
+    ): Session
+    addSession(teacherId: ID!, classId: ID!, startTime: String!): Session
+    editSession(teacherId: ID!, sessionId: ID!, endTime: String): Session
+    deleteSession(teacherId: ID!, sessionId: ID!): User
+  }
+
+  input StudentInput {
+    firstName: String!
+    lastName: String!
   }
 
   type Class {
@@ -26,7 +49,6 @@ const typeDefs = gql`
     teacher: User!
     "Students in the class"
     students: [Student]!
-    log: [String]!
   }
 
   type User {
@@ -35,19 +57,19 @@ const typeDefs = gql`
     lastName: String!
     email: String!
     classes: [Class]!
+    sessionHistory: [Session]!
   }
 
   type Student {
     id: ID!
     firstName: String!
     lastName: String!
-    classes: [Class]!
   }
 
   type Session {
     id: ID!
-    user: [User]
-    class: Class!
+    teacherId: ID!
+    classId: ID!
     startTime: String!
     endTime: String
     log: [LogEntry]!

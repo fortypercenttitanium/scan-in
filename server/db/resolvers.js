@@ -46,11 +46,23 @@ const resolvers = {
   },
   Mutation: {
     async addUser(parent, args) {
-      const { firstName, lastName, email, id } = args;
-
-      db.collection('users')
-        .doc(id)
-        .set({ firstName, lastName, email, id, classes: [] });
+      try {
+        const { firstName, lastName, email, id } = args;
+        await db
+          .collection('users')
+          .doc(id)
+          .set({ firstName, lastName, email, id, classes: [] });
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
+    async deleteUser(parent, args) {
+      try {
+        const { id } = args;
+        await db.collection('users').doc(id).delete();
+      } catch (err) {
+        throw new ApolloError(err);
+      }
     },
   },
 };
