@@ -11,7 +11,7 @@ const db = admin.firestore();
 
 const resolvers = {
   Query: {
-    async userByEmail(parent, args) {
+    async user(parent, args) {
       const { email } = args;
       try {
         const users = await db.collection('users');

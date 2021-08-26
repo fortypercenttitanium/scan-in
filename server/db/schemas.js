@@ -2,10 +2,11 @@ const { gql } = require('apollo-server');
 
 const typeDefs = gql`
   type Query {
-    userByEmail(email: String!): User
+    user(email: String!): User
     userById(id: ID!): User
-    classList: [Class]!
-    studentList: [Student]!
+    classList(userId: ID!): [Class]!
+    studentList(classId: ID!): [Student]!
+    sessionHistory(userId: ID!): [Session]!
   }
 
   type Mutation {
@@ -41,6 +42,21 @@ const typeDefs = gql`
     firstName: String!
     lastName: String!
     classes: [Class]!
+  }
+
+  type Session {
+    id: ID!
+    user: [User]
+    class: Class!
+    startTime: String!
+    endTime: String
+    log: [LogEntry]!
+  }
+
+  type LogEntry {
+    time: String!
+    event: String!
+    payload: String
   }
 `;
 

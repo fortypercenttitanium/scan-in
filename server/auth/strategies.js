@@ -2,23 +2,17 @@ const MicrosoftStrategy = require('passport-microsoft').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
 const { gql } = require('graphql-request');
 const { nanoid } = require('nanoid');
-const query = require('../db/query');
+const query = require('../helperFunctions/queryHelper');
 
 require('dotenv').config();
 
 const GET_USER_BY_EMAIL = gql`
   query findUserByEmail($email: String!) {
-    userByEmail(email: $email) {
+    user(email: $email) {
       id
       firstName
       lastName
       email
-      classes {
-        students {
-          firstName
-          lastName
-        }
-      }
     }
   }
 `;
@@ -30,12 +24,6 @@ const GET_USER_BY_ID = gql`
       firstName
       lastName
       email
-      classes {
-        students {
-          firstName
-          lastName
-        }
-      }
     }
   }
 `;
@@ -99,9 +87,22 @@ const microsoftStrategy = new MicrosoftStrategy(
   },
 );
 
-const jwtStrategy = new JwtStrategy(jwtOptions, (jwt, done) => {
-  // apollo query for user
-  return done(null, jwt);
+const jwtStrategy = new JwtStrategy(jwtOptions, async (jwt, done) => {
+  const GET_USER_BY_ID = gql`
+    query findUserById($id: ID!) {
+      userById(id: $id) {
+        id
+        firstName
+        lastName
+        email
+      }
+    }
+  `;
+
+  const userQuery = await query(GET_USER_BY_ID, { id: jwt.id });
+  const userData = userQuery.userById;
+
+  return done(null, userData);
 });
 
 function getTokenFromCookie(req) {
