@@ -4,9 +4,12 @@ const typeDefs = gql`
   type Query {
     user(email: String!): User
     userById(id: ID!): User
+    class(id: ID!): Class
     classList(userId: ID!): [Class]!
-    studentList(classId: ID!): [Student]!
-    sessionHistory(userId: ID!): [Session]!
+    student(id: ID!): Student
+    studentList: [Student]!
+    session(id: ID!): Session
+    sessionList(userId: ID!): [Session]!
   }
 
   type Mutation {
@@ -17,23 +20,23 @@ const typeDefs = gql`
       email: String!
     ): User
     deleteUser(id: ID!): User
-    addClass(name: String!, id: ID!): Class
-    editClass(name: String, id: ID!): Class
-    deleteClass(id: ID!): User
-    addStudents(students: [StudentInput!]!): Class
-    editStudents(students: [StudentInput]!): Class
+    addClass(name: String!, students: [ID]!, owner: ID!, id: ID!): [Class!]!
+    editClass(name: String!, students: [ID]!, owner: ID!, id: ID!): [Class!]!
+    deleteClass(id: ID!): [Class]!
+    addStudents(input: [StudentInput!]!): Class
+    editStudents(input: [StudentInput]!): Class
     addLogEntry(
+      id: ID!
       event: String!
       timeStamp: String!
-      studentName: String
-      id: ID!
+      studentName: String!
       studentId: ID!
       sessionId: ID!
       teacherId: ID!
     ): Session
     addSession(teacherId: ID!, classId: ID!, startTime: String!): Session
     editSession(teacherId: ID!, sessionId: ID!, endTime: String): Session
-    deleteSession(teacherId: ID!, sessionId: ID!): User
+    deleteSession(id: ID!): [Session]!
   }
 
   input StudentInput {
@@ -45,10 +48,10 @@ const typeDefs = gql`
     id: ID!
     "The name of the class"
     name: String!
-    "The teacher or user who created the class"
-    teacher: User!
+    "The teacher who created the class"
+    owner: ID!
     "Students in the class"
-    students: [Student]!
+    students: [ID]!
   }
 
   type User {
@@ -56,8 +59,6 @@ const typeDefs = gql`
     firstName: String!
     lastName: String!
     email: String!
-    classes: [Class]!
-    sessionHistory: [Session]!
   }
 
   type Student {
@@ -68,7 +69,6 @@ const typeDefs = gql`
 
   type Session {
     id: ID!
-    teacherId: ID!
     classId: ID!
     startTime: String!
     endTime: String
