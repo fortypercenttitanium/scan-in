@@ -62,16 +62,6 @@ router.delete(
   },
 );
 
-router.post(
-  '/getUserData',
-  passport.authenticate('jwt', {
-    session: false,
-  }),
-  (req, res) => {
-    res.json(req.user);
-  },
-);
-
 function createAccessToken(user) {
   return jwt.sign(user, process.env.JWT_SECRET_KEY, { expiresIn: '30d' });
 }
