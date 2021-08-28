@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const authRouter = require('./routes/auth');
-require('./db/db');
+require('./db/apolloServer');
 require('./socketServer');
 
 const app = express();
