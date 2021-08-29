@@ -48,9 +48,9 @@ const resolvers = {
     async classList(_, args) {
       const { userId } = args;
       const list = await db.collection('classes');
-      const snapshot = await list.where('userId', '==', userId).get();
+      const snapshot = await list.where('owner', '==', userId).get();
 
-      const result = snapshot.docs || null;
+      const result = snapshot.docs.map((doc) => doc.data()) || null;
       return result;
     },
   },
