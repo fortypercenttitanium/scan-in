@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import QrReader from 'react-qr-scanner';
+import QrReader from 'react-qr-barcode-scanner';
+import beep from '../effects/beep.wav';
 
 const StyledScanner = styled.div`
   display: flex;
@@ -10,25 +11,36 @@ const StyledScanner = styled.div`
   border: 1px solid black;
 `;
 
-const handleError = (err) => {
-  console.log(err);
-};
-
-const handleScan = (data) => {
-  if (data) {
-    console.log(data);
-  }
-};
-
 function Scanner() {
+  const [scannerTimeout, setScannerTimeout] = useState(false);
+  const audioRef = useRef();
+
+  useEffect(() => {
+    if (scannerTimeout) {
+      setTimeout(() => {
+        setScannerTimeout(false);
+      }, 3000);
+    }
+  }, [scannerTimeout]);
+
+  const handleError = (err) => {
+    console.log(err);
+  };
+
+  const handleScan = (err, data) => {
+    console.log('checking');
+    if (data) {
+      setScannerTimeout(true);
+      audioRef.current.play();
+      console.log(data);
+    }
+  };
   return (
     <StyledScanner>
-      <QrReader
-        delay={100}
-        style={{ height: 400, margin: 'auto' }}
-        onError={handleError}
-        onScan={handleScan}
-      />
+      {scannerTimeout ? null : (
+        <QrReader delay={400} onError={handleError} onUpdate={handleScan} />
+      )}
+      <audio src={beep} ref={audioRef} />
     </StyledScanner>
   );
 }
