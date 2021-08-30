@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@font-face {
+  font-family: 'StarJedi';
+  src: url(./fonts/Starjedi.ttf) format('truetype');
+}
