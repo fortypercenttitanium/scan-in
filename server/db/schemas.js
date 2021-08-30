@@ -4,7 +4,7 @@ const typeDefs = gql`
   type Query {
     user(email: String!): User
     userById(id: ID!): User
-    class(id: ID!): Class
+    class(id: ID!, userId: ID!): Class
     classList(userId: ID!): [Class]!
     student(id: ID!): Student
     studentList: [Student]!

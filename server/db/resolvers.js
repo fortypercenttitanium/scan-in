@@ -37,18 +37,23 @@ const resolvers = {
       }
     },
     async class(_, args) {
-      const { id } = args;
-      const classes = await db.collection('classes');
-      const snapshot = await classes.doc(id).get();
+      const { id, userId } = args;
 
-      const result = snapshot.data() || null;
+      const classesRef = await db.collection('classes');
+      const snapshot = await classesRef
+        .where('owner', '==', userId)
+        .where('id', '==', id)
+        .get();
+
+      const result = snapshot.docs[0].data() || null;
 
       return result;
     },
     async classList(_, args) {
       const { userId } = args;
-      const list = await db.collection('classes');
-      const snapshot = await list.where('owner', '==', userId).get();
+      const classesRef = await db.collection('classes');
+
+      const snapshot = await classesRef.where('owner', '==', userId).get();
 
       const result = snapshot.docs.map((doc) => doc.data()) || null;
       return result;

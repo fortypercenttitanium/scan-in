@@ -11,7 +11,7 @@ router.get('/userData', (req, res) => {
   res.json(req.user);
 });
 
-router.get('/classList', async (req, res) => {
+router.get('/classes', async (req, res) => {
   const CLASS_LIST = gql`
     query ClassList($userId: ID!) {
       classList(userId: $userId) {
@@ -46,6 +46,26 @@ router.post('/class', async (req, res) => {
   const result = await query(NEW_CLASS, classData);
 
   res.json(result);
+});
+
+router.get('/class', async (req, res) => {
+  const CLASS = gql`
+    query Class($id: ID!, $userId: ID!) {
+      class(id: $id, userId: $userId) {
+        id
+        name
+        students
+      }
+    }
+  `;
+
+  const result = await query(CLASS, { id: req.body.id, userId: req.user.id });
+
+  res.json(result.class);
+});
+
+router.use('*', (req, res) => {
+  res.redirect('/');
 });
 
 module.exports = router;
