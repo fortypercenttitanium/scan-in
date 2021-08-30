@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import './App.css';
 import Header from './components/Header';
 import Scanner from './components/Scanner';
+import SocketProvider from './store/SocketProvider';
 
 export const StyledApp = styled.div`
   display: flex;
@@ -13,7 +14,9 @@ function App() {
   return (
     <StyledApp>
       <Header />
-      <Scanner />
+      <SocketProvider>
+        <Scanner />
+      </SocketProvider>
     </StyledApp>
   );
 }

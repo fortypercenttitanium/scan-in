@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import QrReader from 'react-qr-barcode-scanner';
 import beep from '../effects/beep.wav';
+import { SocketStore } from '../store/SocketProvider';
 
 const StyledScanner = styled.div`
   display: flex;
@@ -12,33 +13,55 @@ const StyledScanner = styled.div`
 `;
 
 function Scanner() {
-  const [scannerTimeout, setScannerTimeout] = useState(false);
+  const [userSignIn, setUserSignIn] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const { sessionLog, sendMessage } = useContext(SocketStore);
   const audioRef = useRef();
 
   useEffect(() => {
-    if (scannerTimeout) {
-      setTimeout(() => {
-        setScannerTimeout(false);
-      }, 3000);
+    const newestSession = sessionLog.length && [sessionLog.length - 1];
+    if (newestSession.event === 'SIGN_IN') {
+      setLoading(false);
+      setUserSignIn(newestSession.payload);
     }
-  }, [scannerTimeout]);
+  }, [sessionLog]);
+
+  useEffect(() => {
+    if (userSignIn && !loading) {
+      setTimeout(() => {
+        setUserSignIn(null);
+      }, 2000);
+    }
+  }, [userSignIn, loading]);
 
   const handleError = (err) => {
     console.log(err);
   };
 
-  const handleScan = (err, data) => {
-    console.log('checking');
-    if (data) {
-      setScannerTimeout(true);
+  const handleSignIn = (id) => {
+    sendMessage({ event: 'SIGN_IN', payload: id });
+  };
+
+  const handleScan = (err, result) => {
+    if (result) {
+      setLoading(true);
+      handleSignIn(result.text);
       audioRef.current.play();
-      console.log(data);
     }
   };
   return (
     <StyledScanner>
-      {scannerTimeout ? null : (
-        <QrReader delay={400} onError={handleError} onUpdate={handleScan} />
+      {loading ? (
+        <h1>Please wait...</h1>
+      ) : userSignIn ? (
+        <h1>{`${userSignIn} signed in!`}</h1>
+      ) : (
+        <QrReader
+          delay={200}
+          onError={handleError}
+          onUpdate={handleScan}
+          facingMode="user"
+        />
       )}
       <audio src={beep} ref={audioRef} />
     </StyledScanner>
