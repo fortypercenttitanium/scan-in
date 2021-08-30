@@ -76,7 +76,7 @@ const typeDefs = gql`
   }
 
   type LogEntry {
-    time: String!
+    timeStamp: String!
     event: String!
     payload: String
   }

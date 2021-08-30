@@ -15,6 +15,10 @@ class SocketMessage {
       throw new Error('No sender included with message.');
     }
 
+    if (!this.message.hasOwnProperty('event')) {
+      throw new Error('Missing event property for message.');
+    }
+
     if (!this.message.hasOwnProperty('payload')) {
       throw new Error('Missing payload property for message.');
     }
