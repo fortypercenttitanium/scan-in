@@ -1,8 +1,13 @@
 const router = require('express').Router();
+const fsPromises = require('fs/promises');
+const fs = require('fs');
+const path = require('path');
 const passport = require('../auth/passport');
 const { gql } = require('graphql-request');
 const query = require('../helperFunctions/queryHelper');
 const { nanoid } = require('nanoid');
+const idToBarcode = require('../helperFunctions/idToBarcode');
+const zipFiles = require('../helperFunctions/zipFiles');
 require('dotenv').config();
 
 router.use(passport.authenticate('jwt', { session: false }));
@@ -62,6 +67,27 @@ router.get('/class', async (req, res) => {
   const result = await query(CLASS, { id: req.body.id, userId: req.user.id });
 
   res.json(result.class);
+});
+
+router.post('/barcodes', async (req, res, next) => {
+  try {
+    const ids = req.body.ids;
+    const ADD_DOWNLOAD = gql`
+      mutation AddDownload($data: [String]!) {
+        addDownload(data: $data) {
+          data
+          token
+          expires
+        }
+      }
+    `;
+
+    const result = await query(ADD_DOWNLOAD, { data: ids });
+
+    res.json(result);
+  } catch (err) {
+    return next(err);
+  }
 });
 
 router.use('*', (req, res) => {

@@ -10,6 +10,7 @@ const typeDefs = gql`
     studentList: [Student]!
     session(id: ID!): Session
     sessionList(userId: ID!): [Session]!
+    download(token: ID!): Download
   }
 
   type Mutation {
@@ -19,7 +20,7 @@ const typeDefs = gql`
       id: ID!
       email: String!
     ): User
-    deleteUser(id: ID!): User
+    deleteUser(id: ID!): ID
     addClass(name: String!, students: [ID]!, owner: ID!, id: ID!): [Class!]!
     editClass(name: String!, students: [ID]!, owner: ID!, id: ID!): [Class!]!
     deleteClass(id: ID!): [Class]!
@@ -37,6 +38,8 @@ const typeDefs = gql`
     addSession(teacherId: ID!, classId: ID!, startTime: String!): Session
     editSession(teacherId: ID!, sessionId: ID!, endTime: String): Session
     deleteSession(id: ID!): [Session]!
+    addDownload(data: [String]!): Download
+    clearDownloads: [ID]!
   }
 
   input StudentInput {
@@ -79,6 +82,12 @@ const typeDefs = gql`
     timeStamp: String!
     event: String!
     payload: String
+  }
+
+  type Download {
+    expires: String!
+    token: ID!
+    data: [String!]
   }
 `;
 

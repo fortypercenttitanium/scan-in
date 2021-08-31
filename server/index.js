@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const authRouter = require('./routes/authRouter');
 const dbRouter = require('./routes/dbRouter');
+const downloadRouter = require('./routes/downloadRouter');
 require('./db/apolloServer');
 require('./socketServer');
 
@@ -18,6 +19,7 @@ app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 app.use('/auth', authRouter);
 app.use('/db', dbRouter);
+app.use('/download', downloadRouter);
 
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../client/build/index.html'));

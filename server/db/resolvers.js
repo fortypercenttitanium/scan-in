@@ -2,6 +2,9 @@ const admin = require('firebase-admin');
 const { ApolloError } = require('apollo-server');
 
 const serviceAccount = require('./serviceAccountKey.json');
+const { customAlphabet } = require('nanoid');
+
+const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 16);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -57,6 +60,12 @@ const resolvers = {
 
       const result = snapshot.docs.map((doc) => doc.data()) || null;
       return result;
+    },
+    async download(_, args) {
+      const { token } = args;
+
+      const result = await db.collection('downloads').doc(token).get();
+      return result.data();
     },
   },
   Mutation: {
@@ -119,6 +128,49 @@ const resolvers = {
 
         const newClassList = snap.docs.map((doc) => doc.data());
         return newClassList;
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
+    async addDownload(_, args) {
+      try {
+        const { data } = args;
+        const token = nanoid();
+
+        // create expiration date
+        const minutesToExpiration = 15;
+        const expires = new Date().getTime() + minutesToExpiration * 60000;
+
+        await db.collection('downloads').doc(token).set({
+          token,
+          expires,
+          data,
+        });
+
+        return {
+          token,
+          expires,
+          data,
+        };
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
+    async clearDownloads() {
+      try {
+        // filter down to all downloads that  have expired
+        const now = new Date().getTime();
+        const expiredDownloads = await db
+          .collection('downloads')
+          .where('expires', '<', now)
+          .get();
+
+        // get the IDs of downloads deleted
+        const result = expiredDownloads.docs.map((doc) => doc.data().token);
+        // delete each doc
+        expiredDownloads.docs.forEach((download) => download.ref.delete());
+
+        return result;
       } catch (err) {
         throw new ApolloError(err);
       }
