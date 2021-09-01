@@ -71,7 +71,11 @@ router.get('/class', async (req, res) => {
 
 router.post('/barcodes', async (req, res, next) => {
   try {
+    // TODO: use IDs to get all student info, send to barcodes for custom text
+    // Modify class mutation to take student first and last names, assign ID, and create new student
+
     const ids = req.body.ids;
+
     const ADD_DOWNLOAD = gql`
       mutation AddDownload($data: [String]!) {
         addDownload(data: $data) {
@@ -84,7 +88,7 @@ router.post('/barcodes', async (req, res, next) => {
 
     const result = await query(ADD_DOWNLOAD, { data: ids });
 
-    res.json(result);
+    res.json(result.addDownload.token);
   } catch (err) {
     return next(err);
   }

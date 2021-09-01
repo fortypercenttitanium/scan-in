@@ -4,6 +4,7 @@ import './App.css';
 import Header from './components/Header';
 import Scanner from './components/Scanner';
 import SocketProvider from './store/SocketProvider';
+import TestDownload from './components/TestDownload';
 
 export const StyledApp = styled.div`
   display: flex;
@@ -16,6 +17,7 @@ function App() {
       <Header />
       <SocketProvider>
         <Scanner />
+        <TestDownload />
       </SocketProvider>
     </StyledApp>
   );

@@ -60,7 +60,9 @@ router.get('/:token', async (req, res, next) => {
       'barcodes.zip',
       async () => {
         try {
-          await fs.rmdir(path.join(__dirname, 'temp'));
+          await fsPromises.rm(path.join(__dirname, 'temp'), {
+            recursive: true,
+          });
           console.log('Cleanup finished');
         } catch (err) {
           console.log(err);
