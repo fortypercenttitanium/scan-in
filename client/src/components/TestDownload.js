@@ -8,12 +8,18 @@ function TestDownload() {
 
   useEffect(() => {
     async function getClasses() {
-      const classList = await fetch('/db/classes', {
-        credentials: 'include',
-        method: 'GET',
-      });
-      const json = await classList.json();
-      setClasses(json);
+      try {
+        const response = await fetch('/db/classes', {
+          credentials: 'include',
+          method: 'GET',
+        });
+        if (response.ok) {
+          const json = await response.json();
+          setClasses(json);
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
     getClasses();
   }, [setClasses]);
@@ -49,7 +55,7 @@ function TestDownload() {
     <div>
       {classes.map((classObj) => {
         return (
-          <div style={{ display: 'block' }}>
+          <div key={classObj.id} style={{ display: 'block' }}>
             <button onClick={() => handleGetDownloadLink(classObj)}>
               {classObj.name}
             </button>
