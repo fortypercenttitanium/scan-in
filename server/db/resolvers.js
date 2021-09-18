@@ -40,32 +40,72 @@ const resolvers = {
       }
     },
     async class(_, args) {
-      const { id, userId } = args;
+      try {
+        const { id, userId } = args;
 
-      const classesRef = await db.collection('classes');
-      const snapshot = await classesRef
-        .where('owner', '==', userId)
-        .where('id', '==', id)
-        .get();
+        const classesRef = await db.collection('classes');
+        const snapshot = await classesRef
+          .where('owner', '==', userId)
+          .where('id', '==', id)
+          .get();
 
-      const result = snapshot.docs[0].data() || null;
+        const result = snapshot.docs[0].data() || null;
 
-      return result;
+        return result;
+      } catch (err) {
+        throw new ApolloError(err);
+      }
     },
     async classList(_, args) {
-      const { userId } = args;
-      const classesRef = await db.collection('classes');
+      try {
+        const { userId } = args;
+        const classesRef = await db.collection('classes');
 
-      const snapshot = await classesRef.where('owner', '==', userId).get();
+        const snapshot = await classesRef.where('owner', '==', userId).get();
 
-      const result = snapshot.docs.map((doc) => doc.data()) || null;
-      return result;
+        const result = snapshot.docs.map((doc) => doc.data()) || null;
+        return result;
+      } catch (err) {
+        throw new ApolloError(err);
+      }
     },
     async download(_, args) {
-      const { token } = args;
+      try {
+        const { token } = args;
 
-      const result = await db.collection('downloads').doc(token).get();
-      return result.data();
+        const result = await db.collection('downloads').doc(token).get();
+        return result.data();
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
+    async studentList(_, args) {
+      try {
+        const snapshot = await db.collection('students').docs.get();
+        const data = snapshot.map((doc) => doc.data());
+
+        if (args.classId) {
+          return data.filter((student) =>
+            student.classes.includes(args.classId),
+          );
+        }
+
+        return data;
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
+    async studentsById(_, args) {
+      try {
+        const [ids] = args;
+
+        const query = await db.collection('students').docs.get();
+        const data = query.map((doc) => doc.data());
+
+        return data.filter((student) => ids.includes(student.id));
+      } catch (err) {
+        throw new ApolloError(err);
+      }
     },
   },
   Mutation: {
@@ -171,6 +211,24 @@ const resolvers = {
         expiredDownloads.docs.forEach((download) => download.ref.delete());
 
         return result;
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
+    async updateStudents(_, args) {
+      try {
+        const [students] = args;
+        const batch = db.batch();
+
+        const collection = await db.collection('students');
+
+        students.forEach((student) => {
+          batch.set(collection, student);
+        });
+
+        await batch.commit();
+
+        return students;
       } catch (err) {
         throw new ApolloError(err);
       }

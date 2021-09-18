@@ -7,7 +7,8 @@ const typeDefs = gql`
     class(id: ID!, userId: ID!): Class
     classList(userId: ID!): [Class]!
     student(id: ID!): Student
-    studentList: [Student]!
+    studentsById(ids: [ID]!): [Student]!
+    studentList(classId: ID): [Student]!
     session(id: ID!): Session
     sessionList(userId: ID!): [Session]!
     download(token: ID!): Download
@@ -24,7 +25,7 @@ const typeDefs = gql`
     addClass(name: String!, students: [ID]!, owner: ID!, id: ID!): [Class!]!
     editClass(name: String!, students: [ID]!, owner: ID!, id: ID!): [Class!]!
     deleteClass(id: ID!): [Class]!
-    addStudents(input: [StudentInput!]!): Class
+    updateStudents(input: [StudentInput!]!): [Student]!
     editStudents(input: [StudentInput]!): Class
     addLogEntry(
       id: ID!
@@ -43,8 +44,10 @@ const typeDefs = gql`
   }
 
   input StudentInput {
+    id: ID!
     firstName: String!
     lastName: String!
+    classes: [ID]!
   }
 
   type Class {

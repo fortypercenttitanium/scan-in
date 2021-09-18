@@ -16,41 +16,138 @@ router.get('/userData', (req, res) => {
   res.json(req.user);
 });
 
-router.get('/classes', async (req, res) => {
-  const CLASS_LIST = gql`
-    query ClassList($userId: ID!) {
-      classList(userId: $userId) {
-        id
-        name
-        students
+router.get('/classes', async (req, res, next) => {
+  try {
+    const CLASS_LIST = gql`
+      query ClassList($userId: ID!) {
+        classList(userId: $userId) {
+          id
+          name
+          students
+        }
       }
-    }
-  `;
+    `;
 
-  const result = await query(CLASS_LIST, { userId: req.user.id });
+    const result = await query(CLASS_LIST, { userId: req.user.id });
 
-  res.json(result.classList);
+    res.json(result.classList);
+  } catch (err) {
+    return next(err);
+  }
 });
 
-router.post('/class', async (req, res) => {
-  const { classData } = req.body;
+router.post('/class', async (req, res, next) => {
+  try {
+    // classData just needs student first and last names
+    const { classData } = req.body;
+    console.log('cd', classData);
 
-  classData.id = nanoid();
-  classData.owner = req.user.id;
+    classData.id = nanoid();
+    classData.owner = req.user.id;
 
-  const NEW_CLASS = gql`
-    mutation addClass($name: String!, $students: [ID]!, $owner: ID!, $id: ID!) {
-      addClass(name: $name, students: $students, owner: $owner, id: $id) {
-        id
-        owner
-        students
+    const NEW_CLASS = gql`
+      mutation AddClass(
+        $name: String!
+        $students: [ID]!
+        $owner: ID!
+        $id: ID!
+      ) {
+        addClass(name: $name, students: $students, owner: $owner, id: $id) {
+          id
+          owner
+          students
+        }
       }
+    `;
+
+    const GET_ALL_STUDENTS = gql`
+      query GetStudents {
+        studentList {
+          id
+          firstName
+          lastName
+        }
+      }
+    `;
+
+    const UPDATE_STUDENTS = gql`
+      mutation UpdateStudents() {
+        updateStudents {
+          id
+          classes
+        }
+      }
+    `;
+
+    // Validation: student name must contain non whitespace chars
+    const reqStudents = classData.students.map((student) => {
+      student.firstName = student.firstName.trim();
+      student.lastName = student.lastName.trim();
+    });
+
+    if (reqStudents.length) {
+      reqStudents.forEach((student) => {
+        if (!student.firstName || !student.lastName) {
+          throw new Error(
+            'Invalid list of students. All students need a first and last name.',
+          );
+        }
+      });
     }
-  `;
 
-  const result = await query(NEW_CLASS, classData);
+    // get student list and filter by names given
+    const allStudents = await query(GET_ALL_STUDENTS);
 
-  res.json(result);
+    // get existing students and add class to their class list
+    const existingStudents = allStudents.studentList.filter((dbStudent) =>
+      reqStudents.find(
+        (queryStudent) =>
+          queryStudent.firstName.toLowerCase() ===
+            dbStudent.firstName.toLowerCase() &&
+          queryStudent.lastName.toLowerCase() ===
+            dbStudent.lastName.toLowerCase(),
+      ),
+    );
+
+    const newExistingStudents = existingStudents.map((student) => {
+      student.classes.push(classData.id);
+      return student;
+    });
+
+    // get all students who aren't in db, assign a new ID, add class to list
+    const newStudents = reqStudents.filter((newStudent) =>
+      allStudents.some(
+        (dbStudent) =>
+          dbStudent.firstName.toLowerCase() ===
+            newStudent.firstName.toLowerCase() &&
+          dbStudent.lastName.toLowerCase() ===
+            newStudent.lastName.toLowerCase(),
+      ),
+    );
+
+    newStudentsWithId = newStudents.map((student) => {
+      student.id = nanoid();
+      student.classes = [classData.id];
+      return student;
+    });
+
+    // get all students and give their IDs to the class mutation
+    const allClassStudents = [...newExistingStudents, ...newStudentsWithId];
+
+    classData.students = allClassStudents.filter((student) => student.id);
+
+    const studentResult = await query(UPDATE_STUDENTS, {
+      input: allClassStudents,
+    });
+    console.log('sr', studentResult);
+
+    const classResult = await query(NEW_CLASS, classData);
+    console.log('cr', classResult);
+
+    res.json(classResult);
+  } catch (err) {
+    return next(err);
+  }
 });
 
 router.get('/class', async (req, res) => {
@@ -75,6 +172,16 @@ router.post('/barcodes', async (req, res, next) => {
     // Modify class mutation to take student first and last names, assign ID, and create new student
 
     const ids = req.body.ids;
+
+    const GET_STUDENTS_BY_ID = gql`
+      query GetStudents($ids: [String]!) {
+        getStudentsById(ids: $ids) {
+          id
+          firstName
+          lastName
+        }
+      }
+    `;
 
     const ADD_DOWNLOAD = gql`
       mutation AddDownload($data: [String]!) {
