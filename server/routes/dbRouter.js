@@ -36,11 +36,57 @@ router.get('/classes', async (req, res, next) => {
   }
 });
 
+router.post('/students', async (req, res, next) => {
+  try {
+    const { students } = req.body;
+
+    const GET_STUDENTS_BY_IDS = gql`
+      query getStudentsById($ids: [ID!]!) {
+        studentsById(ids: $ids) {
+          id
+        }
+      }
+    `;
+
+    const ids = students.map((student) => student.id);
+
+    const { studentsById: currentStudents } = await query(GET_STUDENTS_BY_IDS, {
+      ids,
+    });
+
+    const newStudents = students.filter(
+      (student) =>
+        !currentStudents.some(
+          (currentStudent) => student.id === currentStudent.id,
+        ),
+    );
+
+    if (newStudents.length) {
+      const ADD_STUDENTS = gql`
+        mutation AddStudents($students: [StudentInput!]!) {
+          addStudents(students: $students) {
+            firstName
+            lastName
+            id
+          }
+        }
+      `;
+
+      await query(ADD_STUDENTS, { students: newStudents });
+      const { studentsById } = await query(GET_STUDENTS_BY_IDS, { ids });
+      res.json(studentsById);
+    }
+
+    res.json(currentStudents);
+  } catch (err) {
+    return next(err);
+  }
+});
+
 router.post('/class', async (req, res, next) => {
   try {
     // classData just needs student first and last names
     const { classData } = req.body;
-    console.log('cd', classData);
 
     classData.id = nanoid();
     classData.owner = req.user.id;

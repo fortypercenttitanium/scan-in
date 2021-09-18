@@ -22,9 +22,10 @@ const typeDefs = gql`
       email: String!
     ): User
     deleteUser(id: ID!): ID
-    addClass(name: String!, students: [ID]!, owner: ID!, id: ID!): [Class!]!
-    editClass(name: String!, students: [ID]!, owner: ID!, id: ID!): [Class!]!
+    addClass(name: String!, students: [ID]!, owner: ID!, id: ID!): Class!
+    editClass(name: String!, students: [ID]!, owner: ID!, id: ID!): Class!
     deleteClass(id: ID!): [Class]!
+    addStudents(students: [StudentInput!]!): [Student]!
     updateStudents(input: [StudentInput!]!): [Student]!
     editStudents(input: [StudentInput]!): Class
     addLogEntry(
@@ -47,7 +48,6 @@ const typeDefs = gql`
     id: ID!
     firstName: String!
     lastName: String!
-    classes: [ID]!
   }
 
   type Class {
@@ -71,6 +71,7 @@ const typeDefs = gql`
     id: ID!
     firstName: String!
     lastName: String!
+    classes: [ID]
   }
 
   type Session {

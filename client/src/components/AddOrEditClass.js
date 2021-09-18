@@ -13,28 +13,49 @@ function AddOrEditClass() {
   const [error, setError] = useState('');
   const studentDataFormat = 'Last, First (ID)';
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    setError('');
+  async function handleSubmit(e) {
+    try {
+      e.preventDefault();
+      setError('');
 
-    // trim text box and reset
-    const trimmed = studentData.trim();
-    setStudentData(trimmed);
+      // trim text box and reset
+      const trimmed = studentData.trim();
+      setStudentData(trimmed);
 
-    // convert to array at newlines
-    const split = trimmed.split('\n');
-    const parsedData = split.map((data) => parseStudentData(data));
+      // convert to array at newlines
+      const split = trimmed.split('\n');
+      const parsedData = split.map((data) => parseStudentData(data));
 
-    // validate each student
-    parsedData.forEach((data, index) => {
-      if (!data)
-        setError(
-          `Invalid student entry on line ${index + 1}
-          Please use the format: ${studentDataFormat}`,
-        );
-    });
+      // validate each student
+      const hasErrors = !parsedData.every((data) => data);
+      if (hasErrors) {
+        return parsedData.forEach((data, index) => {
+          if (!data)
+            setError(
+              `Invalid student entry on line ${index + 1}
+              Please use the format: ${studentDataFormat}`,
+            );
+        });
+      }
 
-    console.log(parsedData);
+      const studentsResult = await fetch('/db/students', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ students: parsedData }),
+      });
+      console.log(studentsResult);
+      if (studentsResult.ok) {
+        const studentsJSON = await studentsResult.json();
+        console.log('Successfully added students: \n', studentsJSON);
+      } else {
+        console.log(studentsResult);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   function handleNameChange(e) {
@@ -46,21 +67,22 @@ function AddOrEditClass() {
   }
 
   function parseStudentData(data) {
-    const regex = /^[A-Za-z]+, [A-Za-z\-']+ \(\d{5,}\)$/;
+    // TODO: adjust to account for two-word names, or inclusion of middle name
+    const regex = /^[A-Za-z']+, [A-Za-z\-']+ \(\d{5,}\)$/;
 
     if (!regex.test(data)) {
       return null;
     }
 
     const split = data.split(' ');
-    const firstName = split[0].replace(',', '');
-    const lastName = split[1];
-    const studentId = split[2].replace(/\(|\)/g, '');
+    const firstName = split[1].replace(',', '');
+    const lastName = split[0];
+    const id = split[2].replace(/\(|\)/g, '');
 
     return {
       firstName,
       lastName,
-      studentId,
+      id,
     };
   }
 

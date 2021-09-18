@@ -97,10 +97,11 @@ const resolvers = {
     },
     async studentsById(_, args) {
       try {
-        const [ids] = args;
+        const { ids } = args;
 
-        const query = await db.collection('students').docs.get();
-        const data = query.map((doc) => doc.data());
+        const studentsRef = await db.collection('students');
+        const snapshot = await studentsRef.get();
+        const data = snapshot.docs.map((doc) => doc.data());
 
         return data.filter((student) => ids.includes(student.id));
       } catch (err) {
@@ -128,12 +129,32 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
+    async addStudents(_, args) {
+      try {
+        const { students } = args;
+        const batch = db.batch();
+
+        const studentsRef = await db.collection('students');
+
+        students.forEach((student) => {
+          batch.set(studentsRef.doc(student.id), student, { merge: true });
+        });
+
+        await batch.commit();
+
+        return students;
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
     async addClass(_, args) {
       try {
         const { name, students, owner, id } = args;
+
+        const classStudentList = students.map((student) => student.id);
         const newClass = {
           name,
-          students,
+          students: classStudentList,
           owner,
           id,
         };
