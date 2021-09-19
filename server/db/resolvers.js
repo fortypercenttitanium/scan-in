@@ -9,16 +9,27 @@ const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 16);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
-
 const db = admin.firestore();
+let classesRef;
+let usersRef;
+let studentsRef;
+let downloadsRef;
+
+async function createRefs() {
+  classesRef = await db.collection('classes');
+  usersRef = await db.collection('users');
+  studentsRef = await db.collection('students');
+  downloadsRef = await db.collection('downloads');
+}
+
+createRefs();
 
 const resolvers = {
   Query: {
     async user(_, args) {
       const { email } = args;
       try {
-        const users = await db.collection('users');
-        const snapshot = await users.where('email', '==', email).get();
+        const snapshot = await usersRef.where('email', '==', email).get();
 
         const user = snapshot.docs[0].data() || null;
         return user;
@@ -29,8 +40,7 @@ const resolvers = {
     async userById(_, args) {
       try {
         const { id } = args;
-        const users = await db.collection('users');
-        const snapshot = await users.doc(id).get();
+        const snapshot = await usersRef.doc(id).get();
 
         const user = snapshot.data() || null;
 
@@ -43,7 +53,6 @@ const resolvers = {
       try {
         const { id, userId } = args;
 
-        const classesRef = await db.collection('classes');
         const snapshot = await classesRef
           .where('owner', '==', userId)
           .where('id', '==', id)
@@ -56,10 +65,26 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
+    async classByName(_, args) {
+      try {
+        const { name, userId } = args;
+
+        const snap = await classesRef
+          .where('owner', '==', userId)
+          .where('name', '==', name)
+          .get();
+        const docs = snap.docs.map((doc) => doc.data());
+
+        const result = docs[0] || null;
+
+        return result;
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
     async classList(_, args) {
       try {
         const { userId } = args;
-        const classesRef = await db.collection('classes');
 
         const snapshot = await classesRef.where('owner', '==', userId).get();
 
@@ -73,7 +98,7 @@ const resolvers = {
       try {
         const { token } = args;
 
-        const result = await db.collection('downloads').doc(token).get();
+        const result = await downloadsRef.doc(token).get();
         return result.data();
       } catch (err) {
         throw new ApolloError(err);
@@ -81,7 +106,7 @@ const resolvers = {
     },
     async studentList(_, args) {
       try {
-        const snapshot = await db.collection('students').docs.get();
+        const snapshot = await studentsRef.docs.get();
         const data = snapshot.map((doc) => doc.data());
 
         if (args.classId) {
@@ -99,7 +124,6 @@ const resolvers = {
       try {
         const { ids } = args;
 
-        const studentsRef = await db.collection('students');
         const snapshot = await studentsRef.get();
         const data = snapshot.docs.map((doc) => doc.data());
 
@@ -113,8 +137,7 @@ const resolvers = {
     async addUser(parent, args) {
       try {
         const { firstName, lastName, email, id } = args;
-        await db
-          .collection('users')
+        await usersRef
           .doc(id)
           .set({ firstName, lastName, email, id, classes: [] });
       } catch (err) {
@@ -124,7 +147,7 @@ const resolvers = {
     async deleteUser(parent, args) {
       try {
         const { id } = args;
-        await db.collection('users').doc(id).delete();
+        await usersRef.doc(id).delete();
       } catch (err) {
         throw new ApolloError(err);
       }
@@ -133,8 +156,6 @@ const resolvers = {
       try {
         const { students } = args;
         const batch = db.batch();
-
-        const studentsRef = await db.collection('students');
 
         students.forEach((student) => {
           batch.set(studentsRef.doc(student.id), student, { merge: true });
@@ -150,24 +171,45 @@ const resolvers = {
     async addClass(_, args) {
       try {
         const { name, students, owner, id } = args;
+        const studentBatch = db.batch();
 
-        const classStudentList = students.map((student) => student.id);
+        // set new class
         const newClass = {
           name,
-          students: classStudentList,
+          students,
           owner,
           id,
         };
 
-        await db.collection('classes').doc(id).set(newClass);
+        await classesRef.doc(id).set(newClass);
 
-        const snap = await db
-          .collection('classes')
-          .where('owner', '==', owner)
-          .get();
+        // get all students in class and add this class
+        const studentsSnap = await studentsRef.get();
+        const studentsToEdit = studentsSnap.docs.filter(({ id }) =>
+          students.includes(id),
+        );
 
-        const newClassList = snap.docs.map((doc) => doc.data());
-        return newClassList;
+        const studentsWithClass = studentsToEdit
+          .map((student) => ({
+            ...student.data(),
+          }))
+          .map((student) => ({
+            ...student,
+            classes: student.classes ? [...student.classes, id] : [id],
+          }));
+
+        studentsWithClass.forEach((student) => {
+          studentBatch.set(studentsRef.doc(student.id), student, {
+            merge: true,
+          });
+        });
+
+        studentBatch.commit();
+
+        const classSnap = await classesRef.doc(id);
+        const classQuery = await classSnap.get();
+
+        return classQuery.data();
       } catch (err) {
         throw new ApolloError(err);
       }
@@ -180,12 +222,9 @@ const resolvers = {
           students,
         };
 
-        await db.collection('classes').doc(id).set(editedData, { merge: true });
+        await classesRef.doc(id).set(editedData, { merge: true });
 
-        const snap = await db
-          .collection('classes')
-          .where('owner', '==', owner)
-          .get();
+        const snap = classesRef.where('owner', '==', owner).get();
 
         const newClassList = snap.docs.map((doc) => doc.data());
         return newClassList;
@@ -202,7 +241,7 @@ const resolvers = {
         const minutesToExpiration = 15;
         const expires = new Date().getTime() + minutesToExpiration * 60000;
 
-        await db.collection('downloads').doc(token).set({
+        await downloadsRef.doc(token).set({
           token,
           expires,
           data,
@@ -221,10 +260,8 @@ const resolvers = {
       try {
         // filter down to all downloads that  have expired
         const now = new Date().getTime();
-        const expiredDownloads = await db
-          .collection('downloads')
-          .where('expires', '<', now)
-          .get();
+        const expiredDownloads = await db;
+        downloadsRef.where('expires', '<', now).get();
 
         // get the IDs of downloads deleted
         const result = expiredDownloads.docs.map((doc) => doc.data().token);
@@ -241,10 +278,8 @@ const resolvers = {
         const [students] = args;
         const batch = db.batch();
 
-        const collection = await db.collection('students');
-
         students.forEach((student) => {
-          batch.set(collection, student);
+          batch.set(studentsRef, student);
         });
 
         await batch.commit();

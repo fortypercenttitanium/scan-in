@@ -6,6 +6,7 @@ const typeDefs = gql`
     userById(id: ID!): User
     class(id: ID!, userId: ID!): Class
     classList(userId: ID!): [Class]!
+    classByName(name: String!, userId: ID!): Class
     student(id: ID!): Student
     studentsById(ids: [ID]!): [Student]!
     studentList(classId: ID): [Student]!

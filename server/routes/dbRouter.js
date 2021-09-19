@@ -85,11 +85,18 @@ router.post('/students', async (req, res, next) => {
 
 router.post('/class', async (req, res, next) => {
   try {
-    // classData just needs student first and last names
     const { classData } = req.body;
 
     classData.id = nanoid();
     classData.owner = req.user.id;
+
+    const CLASS_BY_NAME = gql`
+      query Class($name: String!, $userId: ID!) {
+        classByName(name: $name, userId: $userId) {
+          id
+        }
+      }
+    `;
 
     const NEW_CLASS = gql`
       mutation AddClass(
@@ -106,91 +113,21 @@ router.post('/class', async (req, res, next) => {
       }
     `;
 
-    const GET_ALL_STUDENTS = gql`
-      query GetStudents {
-        studentList {
-          id
-          firstName
-          lastName
-        }
-      }
-    `;
-
-    const UPDATE_STUDENTS = gql`
-      mutation UpdateStudents() {
-        updateStudents {
-          id
-          classes
-        }
-      }
-    `;
-
-    // Validation: student name must contain non whitespace chars
-    const reqStudents = classData.students.map((student) => {
-      student.firstName = student.firstName.trim();
-      student.lastName = student.lastName.trim();
+    const nameTaken = await query(CLASS_BY_NAME, {
+      name: classData.name,
+      userId: req.user.id,
     });
 
-    if (reqStudents.length) {
-      reqStudents.forEach((student) => {
-        if (!student.firstName || !student.lastName) {
-          throw new Error(
-            'Invalid list of students. All students need a first and last name.',
-          );
-        }
-      });
+    if (nameTaken.classByName) {
+      return res.json(JSON.stringify({ error: 'Class name already exists' }));
     }
 
-    // get student list and filter by names given
-    const allStudents = await query(GET_ALL_STUDENTS);
-
-    // get existing students and add class to their class list
-    const existingStudents = allStudents.studentList.filter((dbStudent) =>
-      reqStudents.find(
-        (queryStudent) =>
-          queryStudent.firstName.toLowerCase() ===
-            dbStudent.firstName.toLowerCase() &&
-          queryStudent.lastName.toLowerCase() ===
-            dbStudent.lastName.toLowerCase(),
-      ),
-    );
-
-    const newExistingStudents = existingStudents.map((student) => {
-      student.classes.push(classData.id);
-      return student;
+    const classResult = await query(NEW_CLASS, {
+      ...classData,
+      students: classData.students.map((student) => student.id),
     });
 
-    // get all students who aren't in db, assign a new ID, add class to list
-    const newStudents = reqStudents.filter((newStudent) =>
-      allStudents.some(
-        (dbStudent) =>
-          dbStudent.firstName.toLowerCase() ===
-            newStudent.firstName.toLowerCase() &&
-          dbStudent.lastName.toLowerCase() ===
-            newStudent.lastName.toLowerCase(),
-      ),
-    );
-
-    newStudentsWithId = newStudents.map((student) => {
-      student.id = nanoid();
-      student.classes = [classData.id];
-      return student;
-    });
-
-    // get all students and give their IDs to the class mutation
-    const allClassStudents = [...newExistingStudents, ...newStudentsWithId];
-
-    classData.students = allClassStudents.filter((student) => student.id);
-
-    const studentResult = await query(UPDATE_STUDENTS, {
-      input: allClassStudents,
-    });
-    console.log('sr', studentResult);
-
-    const classResult = await query(NEW_CLASS, classData);
-    console.log('cr', classResult);
-
-    res.json(classResult);
+    res.json(JSON.stringify(classResult));
   } catch (err) {
     return next(err);
   }
