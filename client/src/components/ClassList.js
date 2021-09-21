@@ -4,17 +4,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
-import styled from 'styled-components';
-
-const ClassContainer = styled.div`
-  display: flex;
-  width: 600px;
-  margin: auto;
-`;
 
 function ClassList() {
   const [classes, setClasses] = useState([]);
-  const [selectedClass, setSelectedClass] = useState();
+  const [selectedClass, setSelectedClass] = useState('');
 
   useEffect(() => {
     async function getClasses() {
@@ -50,7 +43,9 @@ function ClassList() {
           onChange={handleClickSelect}
         >
           {classes.map((classObj) => (
-            <MenuItem value={classObj.id}>{classObj.name}</MenuItem>
+            <MenuItem key={classObj.id} value={classObj.id}>
+              {classObj.name}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
