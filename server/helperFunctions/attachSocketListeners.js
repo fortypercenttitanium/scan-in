@@ -16,9 +16,9 @@ module.exports = function attachSocketListeners(socket) {
       message: parsedMessage,
     });
 
-    console.log(socketMessage);
-
     socketMessage.validateMessage();
+
+    console.log(socketMessage);
 
     const messageHandler = new MessageHandler(socketMessage);
     messageHandler.handleMessage();

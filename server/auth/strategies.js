@@ -106,7 +106,7 @@ const jwtStrategy = new JwtStrategy(jwtOptions, async (jwt, done) => {
 });
 
 function getTokenFromCookie(req) {
-  return req ? req.cookies['scan_in_access_token'] : null;
+  return req.cookies ? req.cookies['scan_in_access_token'] : null;
 }
 
 module.exports = { microsoftStrategy, jwtStrategy };

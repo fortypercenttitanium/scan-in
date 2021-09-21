@@ -7,6 +7,8 @@ module.exports = class MessageHandler {
   handleMessage() {
     console.log('Handling message: ', this.message);
     switch (this.message.event) {
+      case 'NEW_SESSION':
+        this.createNewSession(this.message.payload);
       case 'SIGN_IN':
         this.handleSignIn(this.message.payload);
       default:
@@ -16,5 +18,9 @@ module.exports = class MessageHandler {
 
   handleSignIn(payload) {
     console.log('handling sign-in: ', payload);
+  }
+
+  createSession(sessionData) {
+    console.log('new session: ', sessionData);
   }
 };

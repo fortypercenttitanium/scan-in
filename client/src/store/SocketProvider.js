@@ -15,10 +15,12 @@ function SocketProvider({ children }) {
         setSessionLog(message.payload);
       }
     };
+
+    window.socket = socket;
     return () => {
       socket.onopen = noop;
     };
-  });
+  }, []);
 
   const sendMessage = (message) => {
     socket.send(JSON.stringify(message));

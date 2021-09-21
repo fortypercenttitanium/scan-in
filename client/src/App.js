@@ -19,7 +19,7 @@ function App() {
       <SocketProvider>
         <AddOrEditClass />
         <ClassList />
-        <Scanner />
+        {/* <Scanner /> */}
         {/* <TestDownload /> */}
       </SocketProvider>
     </StyledApp>

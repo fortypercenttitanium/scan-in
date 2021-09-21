@@ -1,13 +1,8 @@
 const router = require('express').Router();
-const fsPromises = require('fs/promises');
-const fs = require('fs');
-const path = require('path');
 const passport = require('../auth/passport');
 const { gql } = require('graphql-request');
 const query = require('../helperFunctions/queryHelper');
 const { nanoid } = require('nanoid');
-const idToBarcode = require('../helperFunctions/idToBarcode');
-const zipFiles = require('../helperFunctions/zipFiles');
 require('dotenv').config();
 
 router.use(passport.authenticate('jwt', { session: false }));
@@ -183,6 +178,8 @@ router.post('/barcodes', async (req, res, next) => {
     return next(err);
   }
 });
+
+router.post('/session', (req, res, next) => {});
 
 router.use('*', (req, res) => {
   res.redirect('/');
