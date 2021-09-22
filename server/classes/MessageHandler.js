@@ -1,26 +1,32 @@
+const { sessionList } = require('../socketServer');
+
 module.exports = class MessageHandler {
-  constructor({ sender, message }) {
+  constructor({ sender, message, user }) {
     this.sender = sender;
     this.message = message;
+    this.user = user || null;
   }
 
   handleMessage() {
     console.log('Handling message: ', this.message);
     switch (this.message.event) {
-      case 'NEW_SESSION':
-        this.createNewSession(this.message.payload);
-      case 'SIGN_IN':
-        this.handleSignIn(this.message.payload);
+      case 'new-session':
+        this.createSession(this.user, this.message.payload);
+        break;
+      case 'scan-in':
+        this.handleScanIn(this.message.payload);
+        break;
       default:
         break;
     }
   }
 
-  handleSignIn(payload) {
-    console.log('handling sign-in: ', payload);
+  handleScanIn(payload) {
+    console.log('handling scan-in: ', payload);
   }
 
-  createSession(sessionData) {
-    console.log('new session: ', sessionData);
+  createSession(user, sessionData) {
+    console.log('new session for user: ', user);
+    console.log('session class: ', sessionData.class);
   }
 };

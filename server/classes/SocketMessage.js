@@ -1,7 +1,8 @@
 class SocketMessage {
-  constructor({ sender, message }) {
+  constructor({ sender, message, user }) {
     this.sender = sender;
     this.message = message;
+    this.user = user || null;
   }
 
   validateMessage = () => {

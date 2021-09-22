@@ -14,6 +14,7 @@ module.exports = function attachSocketListeners(socket) {
       }
       const receivedMessage = new SocketMessage({
         sender: socket.id,
+        user: socket.owner,
         message: parsedMessage,
       });
       receivedMessage.validateMessage();

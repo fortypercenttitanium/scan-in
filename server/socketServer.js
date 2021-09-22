@@ -21,9 +21,6 @@ const wss = new WebSocket.Server({
 const sessionList = new SessionList();
 
 wss.on('connection', (socket, req) => {
-  attachSocketListeners(socket);
-  assignSocketId(socket);
-
   // custom cookie parser
   req.cookies = socketCookieParser(req);
 
@@ -31,11 +28,14 @@ wss.on('connection', (socket, req) => {
     if (err || !user) {
       socket.send('closing');
       socket.close(4000, 'Unauthorized');
-    }
-    req.user = user;
-  })(req);
+    } else {
+      socket.owner = user.id;
+      assignSocketId(socket);
+      attachSocketListeners(socket);
 
-  console.log(`New socket connection: ${socket.id}`);
+      console.log(`New socket connection: ${socket.id}`);
+    }
+  })(req);
 });
 
-module.exports = wss;
+module.exports = { wss, sessionList };
