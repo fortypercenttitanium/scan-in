@@ -18,8 +18,6 @@ const wss = new WebSocket.Server({
   server,
 });
 
-const sessionList = new SessionList();
-
 wss.on('connection', (socket, req) => {
   // custom cookie parser
   req.cookies = socketCookieParser(req);
@@ -38,4 +36,4 @@ wss.on('connection', (socket, req) => {
   })(req);
 });
 
-module.exports = { wss, sessionList };
+module.exports = wss;

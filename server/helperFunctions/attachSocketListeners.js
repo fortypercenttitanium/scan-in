@@ -1,26 +1,48 @@
 const SocketMessage = require('../classes/SocketMessage');
-const MessageHandler = require('../classes/MessageHandler');
+const SessionList = require('../classes/SessionList');
+const logMessage = require('./logMessage');
+
+const sessionList = new SessionList();
 
 module.exports = function attachSocketListeners(socket) {
+  function createSession({ sessionData }) {
+    sessionList.createSession(socket, sessionData);
+  }
+
+  async function handleScanIn({ sessionID, studentID }) {
+    await sessionList[sessionID].scanIn(studentID);
+  }
+
   socket.on('message', (message) => {
-    console.log('Received message from ' + socket.id);
-    console.log(message.toString());
-    let parsedMessage;
+    logMessage(socket, message);
     try {
+      let parsedMessage;
+
       try {
         parsedMessage = JSON.parse(message);
       } catch {
         throw new Error('Message is not valid JSON.');
       }
+
       const receivedMessage = new SocketMessage({
         sender: socket.id,
         user: socket.owner,
         message: parsedMessage,
       });
-      receivedMessage.validateMessage();
 
-      const messageHandler = new MessageHandler(receivedMessage);
-      messageHandler.handleMessage();
+      receivedMessage.validateMessage(socket);
+      const { event, payload } = receivedMessage.message;
+
+      switch (event) {
+        case 'new-session':
+          createSession(payload);
+          break;
+        case 'scan-in':
+          handleScanIn(payload);
+          break;
+        default:
+          break;
+      }
     } catch ({ message }) {
       socket.send(JSON.stringify(message));
     }

@@ -6,7 +6,7 @@ const authRouter = require('./routes/authRouter');
 const dbRouter = require('./routes/dbRouter');
 const downloadRouter = require('./routes/downloadRouter');
 require('./db/apolloServer');
-require('./socketServer').wss;
+require('./socketServer');
 
 const app = express();
 const PORT = process.env.PORT || 5000;

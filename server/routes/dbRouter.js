@@ -14,8 +14,8 @@ router.get('/userData', (req, res) => {
 router.get('/classes', async (req, res, next) => {
   try {
     const CLASS_LIST = gql`
-      query ClassList($userId: ID!) {
-        classList(userId: $userId) {
+      query ClassList($userID: ID!) {
+        classList(userID: $userID) {
           id
           name
           students
@@ -23,7 +23,7 @@ router.get('/classes', async (req, res, next) => {
       }
     `;
 
-    const result = await query(CLASS_LIST, { userId: req.user.id });
+    const result = await query(CLASS_LIST, { userID: req.user.id });
 
     res.json(result.classList);
   } catch (err) {
@@ -36,8 +36,8 @@ router.post('/students', async (req, res, next) => {
     const { students } = req.body;
 
     const GET_STUDENTS_BY_IDS = gql`
-      query getStudentsById($ids: [ID!]!) {
-        studentsById(ids: $ids) {
+      query getStudentsByID($ids: [ID!]!) {
+        studentsByID(ids: $ids) {
           id
         }
       }
@@ -45,7 +45,7 @@ router.post('/students', async (req, res, next) => {
 
     const ids = students.map((student) => student.id);
 
-    const { studentsById: currentStudents } = await query(GET_STUDENTS_BY_IDS, {
+    const { studentsByID: currentStudents } = await query(GET_STUDENTS_BY_IDS, {
       ids,
     });
 
@@ -68,8 +68,8 @@ router.post('/students', async (req, res, next) => {
       `;
 
       await query(ADD_STUDENTS, { students: newStudents });
-      const { studentsById } = await query(GET_STUDENTS_BY_IDS, { ids });
-      res.json(studentsById);
+      const { studentsByID } = await query(GET_STUDENTS_BY_IDS, { ids });
+      res.json(studentsByID);
     }
 
     res.json(currentStudents);
@@ -86,8 +86,8 @@ router.post('/class', async (req, res, next) => {
     classData.owner = req.user.id;
 
     const CLASS_BY_NAME = gql`
-      query Class($name: String!, $userId: ID!) {
-        classByName(name: $name, userId: $userId) {
+      query Class($name: String!, $userID: ID!) {
+        classByName(name: $name, userID: $userID) {
           id
         }
       }
@@ -110,7 +110,7 @@ router.post('/class', async (req, res, next) => {
 
     const nameTaken = await query(CLASS_BY_NAME, {
       name: classData.name,
-      userId: req.user.id,
+      userID: req.user.id,
     });
 
     if (nameTaken.classByName) {
@@ -130,8 +130,8 @@ router.post('/class', async (req, res, next) => {
 
 router.get('/class', async (req, res) => {
   const CLASS = gql`
-    query Class($id: ID!, $userId: ID!) {
-      class(id: $id, userId: $userId) {
+    query Class($id: ID!, $userID: ID!) {
+      class(id: $id, userID: $userID) {
         id
         name
         students
@@ -139,7 +139,7 @@ router.get('/class', async (req, res) => {
     }
   `;
 
-  const result = await query(CLASS, { id: req.body.id, userId: req.user.id });
+  const result = await query(CLASS, { id: req.body.id, userID: req.user.id });
 
   res.json(result.class);
 });
@@ -153,7 +153,7 @@ router.post('/barcodes', async (req, res, next) => {
 
     const GET_STUDENTS_BY_ID = gql`
       query GetStudents($ids: [String]!) {
-        getStudentsById(ids: $ids) {
+        getStudentsByID(ids: $ids) {
           id
           firstName
           lastName

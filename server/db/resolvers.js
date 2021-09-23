@@ -37,7 +37,7 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
-    async userById(_, args) {
+    async userByID(_, args) {
       try {
         const { id } = args;
         const snapshot = await usersRef.doc(id).get();
@@ -51,10 +51,10 @@ const resolvers = {
     },
     async class(_, args) {
       try {
-        const { id, userId } = args;
+        const { id, userID } = args;
 
         const snapshot = await classesRef
-          .where('owner', '==', userId)
+          .where('owner', '==', userID)
           .where('id', '==', id)
           .get();
 
@@ -67,10 +67,10 @@ const resolvers = {
     },
     async classByName(_, args) {
       try {
-        const { name, userId } = args;
+        const { name, userID } = args;
 
         const snap = await classesRef
-          .where('owner', '==', userId)
+          .where('owner', '==', userID)
           .where('name', '==', name)
           .get();
         const docs = snap.docs.map((doc) => doc.data());
@@ -84,9 +84,9 @@ const resolvers = {
     },
     async classList(_, args) {
       try {
-        const { userId } = args;
+        const { userID } = args;
 
-        const snapshot = await classesRef.where('owner', '==', userId).get();
+        const snapshot = await classesRef.where('owner', '==', userID).get();
 
         const result = snapshot.docs.map((doc) => doc.data()) || null;
         return result;
@@ -109,9 +109,9 @@ const resolvers = {
         const snapshot = await studentsRef.docs.get();
         const data = snapshot.map((doc) => doc.data());
 
-        if (args.classId) {
+        if (args.classID) {
           return data.filter((student) =>
-            student.classes.includes(args.classId),
+            student.classes.includes(args.classID),
           );
         }
 
@@ -120,7 +120,7 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
-    async studentsById(_, args) {
+    async studentsByID(_, args) {
       try {
         const { ids } = args;
 
@@ -285,6 +285,43 @@ const resolvers = {
         await batch.commit();
 
         return students;
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
+    async addSession(_, args) {
+      try {
+        const { classID } = args;
+
+        const classSnap = await classesRef.doc(classID).get();
+        const classData = classSnap.data();
+
+        const studentsQuery = await studentsRef.get();
+        const studentsSnap = await studentsQuery.docs;
+        const studentsData = studentsSnap
+          .map((doc) => doc.data())
+          .filter((student) => classData.students.includes(student.id))
+          .map((student) => ({
+            firstName: student.firstName,
+            lastName: student.lastName,
+            id: student.id,
+          }));
+
+        const startTime = new Date().getTime();
+        const endTime = startTime + 1000 * 60 * 60 * 2;
+
+        const session = {
+          id: nanoid(),
+          classID,
+          className: classData.name,
+          owner: classData.owner,
+          startTime: startTime.toString(),
+          endTime: endTime.toString(),
+          log: [],
+          students: studentsData,
+        };
+
+        return session;
       } catch (err) {
         throw new ApolloError(err);
       }

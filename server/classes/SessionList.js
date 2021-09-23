@@ -8,7 +8,7 @@ module.exports = class SessionList {
     }, 60000);
   }
 
-  createSession = (ownerSocket) => {
+  createSession = (ownerSocket, sessionData) => {
     const existingSessions = this.sessions.filter(
       (session) => session.owner === ownerSocket.id,
     );
@@ -18,7 +18,7 @@ module.exports = class SessionList {
       );
     }
 
-    const session = new Session(ownerSocket);
+    const session = new Session(ownerSocket, sessionData);
     this.sessions[session.id] = session;
   };
 

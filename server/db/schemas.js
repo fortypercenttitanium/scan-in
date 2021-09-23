@@ -3,15 +3,15 @@ const { gql } = require('apollo-server');
 const typeDefs = gql`
   type Query {
     user(email: String!): User
-    userById(id: ID!): User
-    class(id: ID!, userId: ID!): Class
-    classList(userId: ID!): [Class]!
-    classByName(name: String!, userId: ID!): Class
+    userByID(id: ID!): User
+    class(id: ID!, userID: ID!): Class
+    classList(userID: ID!): [Class]!
+    classByName(name: String!, userID: ID!): Class
     student(id: ID!): Student
-    studentsById(ids: [ID]!): [Student]!
-    studentList(classId: ID): [Student]!
+    studentsByID(ids: [ID]!): [Student]!
+    studentList(classID: ID): [Student]!
     session(id: ID!): Session
-    sessionList(userId: ID!): [Session]!
+    sessionList(userID: ID!): [Session]!
     download(token: ID!): Download
   }
 
@@ -34,12 +34,12 @@ const typeDefs = gql`
       event: String!
       timeStamp: String!
       studentName: String!
-      studentId: ID!
-      sessionId: ID!
-      teacherId: ID!
+      studentID: ID!
+      sessionID: ID!
+      teacherID: ID!
     ): Session
-    addSession(teacherId: ID!, classId: ID!, startTime: String!): Session
-    editSession(teacherId: ID!, sessionId: ID!, endTime: String): Session
+    addSession(classID: ID!): Session
+    editSession(teacherID: ID!, sessionID: ID!, endTime: String): Session
     deleteSession(id: ID!): [Session]!
     addDownload(data: [String]!): Download
     clearDownloads: [ID]!
@@ -77,10 +77,13 @@ const typeDefs = gql`
 
   type Session {
     id: ID!
-    classId: ID!
+    classID: ID!
     startTime: String!
-    endTime: String
-    log: [LogEntry]!
+    endTime: String!
+    log: [LogEntry!]!
+    students: [Student]!
+    className: String!
+    owner: ID!
   }
 
   type LogEntry {

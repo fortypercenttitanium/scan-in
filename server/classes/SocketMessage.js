@@ -5,11 +5,16 @@ class SocketMessage {
     this.user = user || null;
   }
 
-  validateMessage = () => {
+  validateMessage = (socket) => {
     if (!this.message || !this.message.event || !this.message.payload) {
-      throw new Error(
-        `Invalid message from "${this.sender}": "${JSON.stringify(message)}"`,
-      );
+      const error = `Invalid message from "${this.sender}": "${JSON.stringify(
+        message,
+      )}"`;
+
+      const message = { event: 'error', payload: { errorMessage: error } };
+      socket.send(JSON.stringify(message));
+
+      throw new Error(error);
     }
   };
 

@@ -18,8 +18,8 @@ const GET_USER_BY_EMAIL = gql`
 `;
 
 const GET_USER_BY_ID = gql`
-  query findUserById($id: ID!) {
-    userById(id: $id) {
+  query findUserByID($id: ID!) {
+    userByID(id: $id) {
       id
       firstName
       lastName
@@ -89,8 +89,8 @@ const microsoftStrategy = new MicrosoftStrategy(
 
 const jwtStrategy = new JwtStrategy(jwtOptions, async (jwt, done) => {
   const GET_USER_BY_ID = gql`
-    query findUserById($id: ID!) {
-      userById(id: $id) {
+    query findUserByID($id: ID!) {
+      userByID(id: $id) {
         id
         firstName
         lastName
@@ -100,7 +100,7 @@ const jwtStrategy = new JwtStrategy(jwtOptions, async (jwt, done) => {
   `;
 
   const userQuery = await query(GET_USER_BY_ID, { id: jwt.id });
-  const userData = userQuery.userById;
+  const userData = userQuery.userByID;
 
   return done(null, userData);
 });

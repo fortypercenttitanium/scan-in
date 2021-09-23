@@ -1,7 +1,8 @@
 const { sessionList } = require('../socketServer');
 
 module.exports = class MessageHandler {
-  constructor({ sender, message, user }) {
+  constructor(socket, { sender, message, user }) {
+    this.socket = socket;
     this.sender = sender;
     this.message = message;
     this.user = user || null;
@@ -11,7 +12,7 @@ module.exports = class MessageHandler {
     console.log('Handling message: ', this.message);
     switch (this.message.event) {
       case 'new-session':
-        this.createSession(this.user, this.message.payload);
+        this.createSession(this.socket, this.message.payload);
         break;
       case 'scan-in':
         this.handleScanIn(this.message.payload);
@@ -23,10 +24,14 @@ module.exports = class MessageHandler {
 
   handleScanIn(payload) {
     console.log('handling scan-in: ', payload);
+
+    const sessionID = payload.sessionID;
+    const studentID = payload.studentID;
+    const timestamp = Date.now().getTime();
   }
 
-  createSession(user, sessionData) {
-    console.log('new session for user: ', user);
-    console.log('session class: ', sessionData.class);
+  createSession(socket, sessionList) {
+    // todo: get all class details
+    sessionList.createSession(sessionData);
   }
 };
