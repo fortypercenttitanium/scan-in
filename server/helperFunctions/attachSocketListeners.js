@@ -5,8 +5,8 @@ const logMessage = require('./logMessage');
 const sessionList = new SessionList();
 
 module.exports = function attachSocketListeners(socket) {
-  function createSession({ sessionData }) {
-    sessionList.createSession(socket, sessionData);
+  function createSession({ classID }) {
+    sessionList.createSession(socket, classID);
   }
 
   async function handleScanIn({ sessionID, studentID }) {
@@ -43,8 +43,9 @@ module.exports = function attachSocketListeners(socket) {
         default:
           break;
       }
-    } catch ({ message }) {
-      socket.send(JSON.stringify(message));
+    } catch (err) {
+      socket.send(JSON.stringify(err.message));
+      console.error(err);
     }
   });
 };

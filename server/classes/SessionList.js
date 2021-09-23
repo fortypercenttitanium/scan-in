@@ -8,9 +8,10 @@ module.exports = class SessionList {
     }, 60000);
   }
 
-  createSession = (ownerSocket, sessionData) => {
-    const existingSessions = this.sessions.filter(
-      (session) => session.owner === ownerSocket.id,
+  createSession = async (ownerSocket, classID) => {
+    console.log('class ID', classID);
+    const existingSessions = Object.keys(this.sessions).filter(
+      (session) => this.sessions[session].owner === ownerSocket.id,
     );
     if (existingSessions.length) {
       throw new Error(
@@ -18,7 +19,8 @@ module.exports = class SessionList {
       );
     }
 
-    const session = new Session(ownerSocket, sessionData);
+    const session = new Session(ownerSocket, classID);
+    await session.init();
     this.sessions[session.id] = session;
   };
 

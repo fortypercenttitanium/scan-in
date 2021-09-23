@@ -7,9 +7,9 @@ module.exports = class Session {
   #sockets;
   #log;
 
-  constructor(socket, sessionData) {
+  constructor(socket, classID) {
     this.owner = socket.owner;
-    this.classID = sessionData.classID;
+    this.classID = classID;
     this.#sockets = [socket];
     this.#log = [];
     this.id = nanoid();
@@ -20,35 +20,34 @@ module.exports = class Session {
   async init() {
     try {
       const NEW_SESSION = gql`
-      mutation ($classID = ID!) {
-        addSession (classID: $classID) {
-          id
-          classID
-          startTime
-          endTime
-          students {
+        mutation ($classID: ID!) {
+          addSession(classID: $classID) {
             id
-            firstName
-            lastName
+            classID
+            startTime
+            endTime
+            students {
+              id
+              firstName
+              lastName
+            }
           }
         }
-      }
-    `;
+      `;
 
       const session = await query(NEW_SESSION, {
         classID: this.classID,
       });
 
-      console.log(session);
-
       const openMessage = new SocketMessage({
         sender: 'server',
         message: {
           event: 'session-opened',
-          payload: { id: this.id, studentList },
+          payload: { id: session.id },
         },
       });
-      socket.send(openMessage.toJSON());
+
+      this.broadcastMessage(openMessage);
     } catch (err) {
       console.error(err);
     }
@@ -65,7 +64,37 @@ module.exports = class Session {
 
   async scanIn(studentID) {
     if (this.studentList.includes(studentID)) {
+      const SCAN_IN = gql`
+        mutation ($payload: String!) {
+          addLogEntry(payload: $payload) {
+            timeStamp
+            event
+            payload
+          }
+        }
+      `;
+
+      const newSessionData = await query(SCAN_IN, { payload: studentID });
+
+      const successMessage = new SocketMessage({
+        sender: 'server',
+        message: {
+          event: 'session-update',
+          payload: newSessionData,
+        },
+      });
+
+      return this.broadcastMessage(successMessage);
     }
+    const failMessage = new SocketMessage({
+      sender: 'server',
+      message: {
+        event: 'scan-failed',
+        payload: { message: `Student ID #${studentID} not found in class.` },
+      },
+    });
+
+    return this.broadcastMessage(failMessage);
   }
 
   broadcastMessage(message) {
