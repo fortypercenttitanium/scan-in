@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import Box from '@mui/material/Box';
-import FormControl from '@mui/material/FormControl';
+import {
+  InputLabel,
+  MenuItem,
+  Select,
+  Box,
+  FormControl,
+  Button,
+} from '@mui/material';
 
-function ClassList() {
+function ClassList({ onSubmit: startSession }) {
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
 
@@ -27,29 +30,43 @@ function ClassList() {
     getClasses();
   }, [setClasses]);
 
-  function handleClickSelect(id) {
-    setSelectedClass(id);
+  function handleClickSelect(e) {
+    setSelectedClass(e.target.value);
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    startSession(selectedClass);
   }
 
   return (
-    <Box m={'24px auto'} sx={{ minWidth: 240, maxWidth: 400 }}>
-      <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Class</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          label="Class"
-          value={selectedClass}
-          onChange={handleClickSelect}
-        >
-          {classes.map((classObj) => (
-            <MenuItem key={classObj.id} value={classObj.id}>
-              {classObj.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </Box>
+    <form onSubmit={handleSubmit}>
+      <Box
+        m={'24px auto'}
+        sx={{ minWidth: 240, maxWidth: 400, '& button': { m: 1 } }}
+      >
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Class</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            label="Class"
+            value={selectedClass}
+            onChange={handleClickSelect}
+            required
+          >
+            {classes.map((classObj) => (
+              <MenuItem key={classObj.id} value={classObj.id}>
+                {classObj.name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Button variant="contained" type="submit">
+            Start session
+          </Button>
+        </FormControl>
+      </Box>
+    </form>
   );
 }
 

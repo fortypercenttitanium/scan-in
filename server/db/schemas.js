@@ -29,7 +29,7 @@ const typeDefs = gql`
     addStudents(students: [StudentInput!]!): [Student]!
     updateStudents(input: [StudentInput!]!): [Student]!
     editStudents(input: [StudentInput]!): Class
-    addLogEntry(event: String!, payload: String): Session
+    addLogEntry(event: String!, payload: String, sessionID: ID!): Session
     addSession(classID: ID!): Session
     editSession(teacherID: ID!, sessionID: ID!, endTime: String): Session
     deleteSession(id: ID!): [Session]!

@@ -10,7 +10,23 @@ module.exports = function attachSocketListeners(socket) {
   }
 
   async function handleScanIn({ sessionID, studentID }) {
-    await sessionList[sessionID].scanIn(studentID);
+    try {
+      if (sessionList.sessions[sessionID]) {
+        await sessionList.sessions[sessionID].scanIn(studentID);
+      } else {
+        const notFoundMessage = new SocketMessage({
+          sender: 'server',
+          message: {
+            event: 'session-not-found',
+            payload: sessionID,
+          },
+        });
+
+        socket.send(notFoundMessage.toJSON());
+      }
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 
   socket.on('message', (message) => {

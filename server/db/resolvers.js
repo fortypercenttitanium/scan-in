@@ -20,6 +20,7 @@ async function createRefs() {
   usersRef = await db.collection('users');
   studentsRef = await db.collection('students');
   downloadsRef = await db.collection('downloads');
+  sessionsRef = await db.collection('sessions');
 }
 
 createRefs();
@@ -309,22 +310,46 @@ const resolvers = {
 
         const startTime = new Date().getTime();
         const endTime = startTime + 1000 * 60 * 60 * 2;
-
+        const id = nanoid();
         const session = {
-          id: nanoid(),
+          id,
           classID,
           className: classData.name,
           owner: classData.owner,
           startTime: startTime.toString(),
           endTime: endTime.toString(),
-          log: [],
+          log: [
+            {
+              event: 'session-open',
+              timeStamp: startTime.toString(),
+              payload: id,
+            },
+          ],
           students: studentsData,
         };
+
+        await sessionsRef.doc(session.id).set(session);
 
         return session;
       } catch (err) {
         throw new ApolloError(err);
       }
+    },
+    async addLogEntry(_, args) {
+      const { event, payload, sessionID } = args;
+      const timeStamp = new Date().getTime().toString();
+
+      await sessionsRef.doc(sessionID).update({
+        log: admin.firestore.FieldValue.arrayUnion({
+          event,
+          payload,
+          timeStamp,
+        }),
+      });
+
+      const updatedSession = await sessionsRef.doc(sessionID).get();
+
+      return updatedSession.data();
     },
   },
 };

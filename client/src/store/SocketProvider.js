@@ -1,33 +1,48 @@
 import React, { createContext, useState, useEffect } from 'react';
 export const SocketStore = createContext();
 
-const socket = new WebSocket('ws://localhost:5001');
-
 function SocketProvider({ children }) {
-  const [sessionLog, setSessionLog] = useState([]);
+  const [sessionData, setSessionData] = useState(null);
 
-  useEffect(() => {
-    const noop = () => {};
+  // let socket;
+
+  function init(classID) {
+    const socket = new WebSocket('ws://localhost:5001');
+
     socket.onmessage = (message) => {
-      console.log('message received: ', message);
+      const messageData = JSON.parse(message.data);
+      console.log('message received: ', messageData);
 
-      if (message.event === 'UPDATE_LOG') {
-        setSessionLog(message.payload);
+      const { event, payload } = messageData.message;
+
+      if (event === 'socket-connected') {
+        socket.send(
+          JSON.stringify({
+            event: 'new-session',
+            payload: { classID: 'EHdw_GkMqMXW_4a0BQiAn' },
+          }),
+        );
+      }
+
+      if (event === 'session-update') {
+        setSessionData({
+          ...sessionData,
+          ...payload,
+        });
+      }
+
+      if (event === 'session-opened') {
+        setSessionData(payload);
       }
     };
 
-    window.socket = socket;
-    return () => {
-      socket.onopen = noop;
-    };
-  }, []);
-
-  const sendMessage = (message) => {
-    socket.send(JSON.stringify(message));
-  };
+    if (process.env.NODE_ENV === 'development') {
+      window.socket = socket;
+    }
+  }
 
   return (
-    <SocketStore.Provider value={{ sessionLog, sendMessage }}>
+    <SocketStore.Provider value={{ init, sessionData }}>
       {children}
     </SocketStore.Provider>
   );

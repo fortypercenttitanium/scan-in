@@ -3,7 +3,6 @@ const app = express();
 const passport = require('./auth/passport');
 const WebSocket = require('ws');
 const SocketMessage = require('./classes/SocketMessage');
-const SessionList = require('./classes/SessionList');
 const attachSocketListeners = require('./helperFunctions/attachSocketListeners');
 const assignSocketId = require('./helperFunctions/assignSocketId');
 const socketCookieParser = require('./helperFunctions/socketCookieParser');
@@ -32,6 +31,13 @@ wss.on('connection', (socket, req) => {
       attachSocketListeners(socket);
 
       console.log(`New socket connection: ${socket.id}`);
+
+      const connectedMessage = new SocketMessage({
+        sender: 'server',
+        message: { event: 'socket-connected', payload: {} },
+      });
+
+      socket.send(connectedMessage.toJSON());
     }
   })(req);
 });

@@ -6,13 +6,14 @@ const { gql } = require('graphql-request');
 module.exports = class Session {
   #sockets;
   #log;
+  #studentList;
 
   constructor(socket, classID) {
     this.owner = socket.owner;
     this.classID = classID;
     this.#sockets = [socket];
     this.#log = [];
-    this.id = nanoid();
+    this.#studentList = [];
     const now = new Date().getTime();
     this.expires = now + 2 * 60 * 60 * 1000;
   }
@@ -26,6 +27,11 @@ module.exports = class Session {
             classID
             startTime
             endTime
+            log {
+              event
+              payload
+              timeStamp
+            }
             students {
               id
               firstName
@@ -35,15 +41,18 @@ module.exports = class Session {
         }
       `;
 
-      const session = await query(NEW_SESSION, {
+      const { addSession: sessionData } = await query(NEW_SESSION, {
         classID: this.classID,
       });
+
+      this.id = sessionData.id;
+      this.#studentList = [...sessionData.students];
 
       const openMessage = new SocketMessage({
         sender: 'server',
         message: {
           event: 'session-opened',
-          payload: { id: session.id },
+          payload: sessionData,
         },
       });
 
@@ -63,24 +72,42 @@ module.exports = class Session {
   }
 
   async scanIn(studentID) {
-    if (this.studentList.includes(studentID)) {
+    if (this.#studentList.some((student) => student.id === studentID)) {
       const SCAN_IN = gql`
-        mutation ($payload: String!) {
-          addLogEntry(payload: $payload) {
-            timeStamp
-            event
-            payload
+        mutation ($payload: String!, $sessionID: ID!) {
+          addLogEntry(
+            payload: $payload
+            sessionID: $sessionID
+            event: "scan-in"
+          ) {
+            id
+            classID
+            startTime
+            endTime
+            log {
+              event
+              payload
+              timeStamp
+            }
+            students {
+              id
+              firstName
+              lastName
+            }
           }
         }
       `;
 
-      const newSessionData = await query(SCAN_IN, { payload: studentID });
+      const newSessionData = await query(SCAN_IN, {
+        payload: studentID,
+        sessionID: this.id,
+      });
 
       const successMessage = new SocketMessage({
         sender: 'server',
         message: {
           event: 'session-update',
-          payload: newSessionData,
+          payload: newSessionData.addLogEntry,
         },
       });
 
