@@ -1,10 +1,8 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
 export const SocketStore = createContext();
 
 function SocketProvider({ children }) {
   const [sessionData, setSessionData] = useState(null);
-
-  // let socket;
 
   function init(classID) {
     const socket = new WebSocket('ws://localhost:5001');
@@ -19,7 +17,7 @@ function SocketProvider({ children }) {
         socket.send(
           JSON.stringify({
             event: 'new-session',
-            payload: { classID: 'EHdw_GkMqMXW_4a0BQiAn' },
+            payload: { classID },
           }),
         );
       }

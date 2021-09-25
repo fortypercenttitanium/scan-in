@@ -15,7 +15,7 @@ function SessionLayout() {
   const { init, socket, sessionData } = useContext(SocketStore);
 
   function handleClassSubmit(selectedClass) {
-    init();
+    init(selectedClass);
   }
 
   return sessionOpened ? (
