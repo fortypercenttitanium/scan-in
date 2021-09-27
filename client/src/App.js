@@ -1,24 +1,53 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { useContext } from 'react';
 import './App.css';
+import { Box, Paper, CssBaseline, Typography } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import Header from './components/Header';
-import SessionLayout from './components/layouts/SessionLayout';
+import HomeLayout from './components/layouts/HomeLayout';
 import SocketProvider from './store/SocketProvider';
+import Footer from './components/Footer';
+import { Store } from './store/Provider';
 
-export const StyledApp = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+function WelcomeScreen() {
+  return (
+    <Paper sx={{ mx: 'auto', my: 6, p: 8, textAlign: 'center' }}>
+      <Typography variant="h4" elevation={3}>
+        Welcome, please log in to get started!
+      </Typography>
+    </Paper>
+  );
+}
 
 function App() {
+  const { userData } = useContext(Store);
   return (
-    <StyledApp>
-      <Header />
-      <SocketProvider>
-        <SessionLayout />
-        {/* <TestDownload /> */}
-      </SocketProvider>
-    </StyledApp>
+    <>
+      <CssBaseline />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          bgcolor: grey[100],
+          position: 'fixed',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+        }}
+      >
+        <Header />
+        <Box sx={{ display: 'flex', width: '100%' }}>
+          {userData ? (
+            <SocketProvider>
+              <HomeLayout />
+            </SocketProvider>
+          ) : (
+            <WelcomeScreen />
+          )}
+        </Box>
+        <Footer />
+      </Box>
+    </>
   );
 }
 

@@ -1,25 +1,15 @@
 import React from 'react';
-import styled from 'styled-components';
+import { Box, Typography } from '@mui/material';
 import Nav from './Nav';
-
-const StyledHeader = styled.header`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  margin: auto 0 auto 24px;
-  .logo {
-    font-family: StarJedi, sans-serif;
-    font-size: 5rem;
-  }
-`;
 
 function Header() {
   return (
-    <StyledHeader>
-      <h1 className="logo">Scan-in</h1>
+    <Box sx={{ display: 'flex' }}>
+      <Typography variant="h1" fontFamily="StarJedi" ml={4} color="#222">
+        Scan-in
+      </Typography>
       <Nav />
-    </StyledHeader>
+    </Box>
   );
 }
 
