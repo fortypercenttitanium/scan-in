@@ -6,6 +6,7 @@ import {
   Box,
   FormControl,
   Button,
+  Stack,
 } from '@mui/material';
 
 function ClassList({ onSubmit: startSession }) {
@@ -43,9 +44,12 @@ function ClassList({ onSubmit: startSession }) {
     <form onSubmit={handleSubmit}>
       <Box
         m={'24px auto'}
-        sx={{ minWidth: 240, maxWidth: 400, '& button': { m: 1 } }}
+        minWidth={240}
+        maxWidth={800}
+        justifyContent="center"
+        display="flex"
       >
-        <FormControl fullWidth>
+        <FormControl>
           <InputLabel id="demo-simple-select-label">Class</InputLabel>
           <Select
             labelId="demo-simple-select-label"
@@ -61,8 +65,21 @@ function ClassList({ onSubmit: startSession }) {
               </MenuItem>
             ))}
           </Select>
-          <Button variant="contained" type="submit">
-            Start session
+          <Stack
+            direction="row"
+            spacing={2}
+            justifyContent="center"
+            m="24px auto"
+          >
+            <Button variant="outlined" type="button">
+              Add class
+            </Button>
+            <Button variant="outlined" type="button">
+              Edit class
+            </Button>
+          </Stack>
+          <Button variant="contained" type="submit" size="large">
+            Take attendance
           </Button>
         </FormControl>
       </Box>

@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
-import SessionLayout from './SessionLayout';
+import ClassList from '../ClassList';
 
 function LinkTab(props) {
   return <Tab sx={{ mx: 4 }} component={Link} {...props} />;
@@ -39,7 +39,7 @@ export default function HomeLayout() {
         <Paper sx={{ mx: 'auto', p: 3, maxWidth: 'md' }} elevation={3}>
           <Switch>
             <Route exact path="/">
-              <Paper elevation={2}>Classes</Paper>
+              <ClassList />
             </Route>
             <Route path="/sessions">
               <Paper elevation={2}>Sessions</Paper>
