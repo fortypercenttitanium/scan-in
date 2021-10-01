@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
+import Quagga from 'quagga';
 import styled from 'styled-components';
 import QrReader from 'react-qr-barcode-scanner';
 import beep from '../effects/beep.wav';
@@ -6,9 +7,7 @@ import { SocketStore } from '../store/SocketProvider';
 
 const StyledScanner = styled.div`
   display: flex;
-  margin: 60px 48px auto auto;
-  height: 500px;
-  width: 800px;
+  margin: 60px 48px;
   border: 1px solid black;
 `;
 
@@ -18,13 +17,13 @@ function Scanner() {
   const { sessionLog, sendMessage } = useContext(SocketStore);
   const audioRef = useRef();
 
-  useEffect(() => {
-    const newestSession = sessionLog.length && [sessionLog.length - 1];
-    if (newestSession.event === 'SIGN_IN') {
-      setLoading(false);
-      setUserSignIn(newestSession.payload);
-    }
-  }, [sessionLog]);
+  // useEffect(() => {
+  //   const newestSession = sessionLog.length && [sessionLog.length - 1];
+  //   if (newestSession.event === 'SIGN_IN') {
+  //     setLoading(false);
+  //     setUserSignIn(newestSession.payload);
+  //   }
+  // }, [sessionLog]);
 
   useEffect(() => {
     if (userSignIn && !loading) {
@@ -34,6 +33,40 @@ function Scanner() {
     }
   }, [userSignIn, loading]);
 
+  useEffect(() => {
+    Quagga.init(
+      {
+        inputStream: {
+          name: 'Live',
+          type: 'LiveStream',
+          target: document.querySelector('.scanner'),
+          constraints: {
+            width: 800,
+            height: 600,
+          },
+        },
+        decoder: {
+          readers: ['code_128_reader', 'code_39_reader', 'code_39_vin_reader'],
+          debug: {
+            drawBoundingBox: true,
+            showFrequency: false,
+            drawScanline: true,
+            showPattern: true,
+          },
+        },
+      },
+      function (err) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log('Initialization finished. Ready to start');
+        Quagga.start();
+      },
+    );
+    Quagga.onDetected(handleScan);
+  }, []);
+
   const handleError = (err) => {
     console.log(err);
   };
@@ -42,13 +75,15 @@ function Scanner() {
     sendMessage({ event: 'SIGN_IN', payload: id });
   };
 
-  const handleScan = (err, result) => {
+  function handleScan(result) {
     if (result) {
-      setLoading(true);
-      handleSignIn(result.text);
+      console.log(result.codeResult.code);
+      // setLoading(true);
+      // handleSignIn(result.text);
       audioRef.current.play();
     }
-  };
+  }
+
   return (
     <StyledScanner>
       {loading ? (
@@ -56,12 +91,7 @@ function Scanner() {
       ) : userSignIn ? (
         <h1>{`${userSignIn} signed in!`}</h1>
       ) : (
-        <QrReader
-          delay={200}
-          onError={handleError}
-          onUpdate={handleScan}
-          facingMode="user"
-        />
+        <div className="scanner" style={{ height: 500 }} />
       )}
       <audio src={beep} ref={audioRef} />
     </StyledScanner>
