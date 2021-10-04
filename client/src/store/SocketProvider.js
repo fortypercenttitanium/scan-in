@@ -5,6 +5,7 @@ function SocketProvider({ children }) {
   const [sessionData, setSessionData] = useState(null);
 
   function init(classID) {
+    console.log(`Initializing class session: ${classID}`);
     const socket = new WebSocket('ws://localhost:5001');
 
     socket.onmessage = (message) => {

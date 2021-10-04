@@ -1,28 +1,21 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Button, Box } from '@mui/material';
-import Scanner from '../Scanner';
-import SocketProvider, { SocketStore } from '../../store/SocketProvider';
-import ClassList from '../ClassList';
-
-//placeholder
-function SessionDashboard() {
-  return <div>Dashboard</div>;
-}
+import { useParams } from 'react-router-dom';
+import { SocketStore } from '../../store/SocketProvider';
+import SessionDashboard from '../SessionDashboard';
 
 function SessionLayout() {
   const [sessionOpened, setSessionOpened] = useState(false);
-
+  const { id } = useParams();
   const { init, socket, sessionData } = useContext(SocketStore);
 
-  function handleClassSubmit(selectedClass) {
-    init(selectedClass);
-  }
+  useEffect(() => {
+    if (!sessionOpened) {
+      setSessionOpened(true);
+      init(id);
+    }
+  }, [init, id, sessionOpened]);
 
-  return sessionOpened ? (
-    <SessionDashboard />
-  ) : (
-    <ClassList onSubmit={handleClassSubmit} />
-  );
+  return sessionOpened ? <SessionDashboard id={id} /> : <div>Loading...</div>;
 }
 
 export default SessionLayout;

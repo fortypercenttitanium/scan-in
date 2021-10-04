@@ -2,16 +2,18 @@ import React, { useState } from 'react';
 import { Paper, Button, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
+import Fullscreen from '@mui/icons-material/Fullscreen';
+import FullscreenExit from '@mui/icons-material/FullscreenExit';
 
 const Item = styled(Button)(({ theme }) => ({
   ...theme.typography.body2,
-  height: theme.spacing(10),
+  height: theme.spacing(9),
   fontSize: '1rem',
-  width: theme.spacing(10),
+  width: theme.spacing(9),
   textAlign: 'center',
 }));
 
-function Numpad() {
+function Numpad({ isFullscreen, toggleFullscreen }) {
   const [numpadDisplay, setNumpadDisplay] = useState('');
 
   function handleNumberPress(e) {
@@ -44,6 +46,9 @@ function Numpad() {
         break;
       case 'clear':
         handleClear();
+        break;
+      case 'fullscreen':
+        toggleFullscreen();
         break;
       default:
         break;
@@ -148,12 +153,15 @@ function Numpad() {
       >
         <Button
           size="large"
-          sx={{ width: '100%', p: '24px' }}
+          sx={{ p: '24px', flex: 1 }}
           data-type="clear"
           variant="contained"
         >
           Clear
         </Button>
+        <Item data-type="fullscreen" size="large" variant="contained">
+          {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
+        </Item>
       </Stack>
     </Paper>
   );

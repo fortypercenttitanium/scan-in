@@ -1,9 +1,17 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Switch,
+  Route,
+  Link,
+} from 'react-router-dom';
 import './App.css';
 import { Box, Paper, CssBaseline, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import Header from './components/Header';
 import HomeLayout from './components/layouts/HomeLayout';
+import SessionLayout from './components/layouts/SessionLayout';
 import SocketProvider from './store/SocketProvider';
 import Footer from './components/Footer';
 import { Store } from './store/Provider';
@@ -20,6 +28,7 @@ function WelcomeScreen() {
 
 function App() {
   const { userData } = useContext(Store);
+
   return (
     <>
       <CssBaseline />
@@ -34,13 +43,21 @@ function App() {
       >
         <Header />
         <Box sx={{ display: 'flex', width: '100%' }}>
-          {userData ? (
-            <SocketProvider>
-              <HomeLayout />
-            </SocketProvider>
-          ) : (
-            <WelcomeScreen />
-          )}
+          <Router>
+            <Switch>
+              <Route exact path="/">
+                {userData ? <Redirect to="/dashboard" /> : <WelcomeScreen />}
+              </Route>
+              <Route path="/dashboard">
+                <HomeLayout />
+              </Route>
+              <Route path="/session/:id">
+                <SocketProvider>
+                  <SessionLayout />
+                </SocketProvider>
+              </Route>
+            </Switch>
+          </Router>
         </Box>
         <Footer />
       </Box>

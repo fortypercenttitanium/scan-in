@@ -8,10 +8,12 @@ import {
   Button,
   Stack,
 } from '@mui/material';
+import { useHistory } from 'react-router-dom';
 
 function ClassList({ onSubmit: startSession }) {
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
+  let history = useHistory();
 
   useEffect(() => {
     async function getClasses() {
@@ -37,7 +39,7 @@ function ClassList({ onSubmit: startSession }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    startSession(selectedClass);
+    history.push(`/session/${selectedClass}`);
   }
 
   return (
