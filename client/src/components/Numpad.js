@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import BarcodeReader from 'react-barcode-reader';
 import { Paper, Button, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
@@ -24,9 +25,23 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
     setNumpadDisplay(numpadDisplay.slice(0, -1));
   }
 
-  function handleSubmit() {
-    console.log('submitting ' + Number(numpadDisplay));
-    handleClear();
+  function handleScan(data) {
+    handleSubmit(data);
+  }
+
+  function handleScanError(err) {
+    console.error(err);
+  }
+
+  function handleSubmit(data) {
+    if (data) {
+      console.log('Submitting: ' + data);
+      return handleClear();
+    }
+    if (numpadDisplay) {
+      console.log('Submitting: ' + Number(numpadDisplay));
+      return handleClear();
+    }
   }
 
   function handleClear() {
@@ -65,6 +80,7 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
       }}
       onClick={handleClick}
     >
+      <BarcodeReader onScan={handleScan} onError={handleScanError} />
       <Paper
         sx={{
           height: '60px',

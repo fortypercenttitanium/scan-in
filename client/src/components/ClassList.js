@@ -8,9 +8,9 @@ import {
   Button,
   Stack,
 } from '@mui/material';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 
-function ClassList({ onSubmit: startSession }) {
+function ClassList() {
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
   let history = useHistory();
@@ -81,7 +81,7 @@ function ClassList({ onSubmit: startSession }) {
             </Button>
           </Stack>
           <Button variant="contained" type="submit" size="large">
-            Take attendance
+            <Link to={`/session/${selectedClass}`}>Take attendance</Link>
           </Button>
         </FormControl>
       </Box>

@@ -60,9 +60,7 @@ export default function HomeLayout() {
         >
           <Switch>
             <Route exact path={path}>
-              <ClassList
-                onSubmit={() => console.log('starting session! (not really)')}
-              />
+              <ClassList />
             </Route>
             <Route path={`${path}/sessions`}>Sessions</Route>
             <Route path={`${path}/help`}>Help</Route>
