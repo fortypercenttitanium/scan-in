@@ -8,12 +8,10 @@ import {
   Button,
   Stack,
 } from '@mui/material';
-import { useHistory, Link } from 'react-router-dom';
 
-function ClassList() {
+function ClassList({ onSubmit: startSession }) {
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
-  let history = useHistory();
 
   useEffect(() => {
     async function getClasses() {
@@ -39,7 +37,7 @@ function ClassList() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    history.push(`/session/${selectedClass}`);
+    startSession(selectedClass);
   }
 
   return (
@@ -81,7 +79,7 @@ function ClassList() {
             </Button>
           </Stack>
           <Button variant="contained" type="submit" size="large">
-            <Link to={`/session/${selectedClass}`}>Take attendance</Link>
+            Take attendance
           </Button>
         </FormControl>
       </Box>

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import {
   BrowserRouter as Router,
   Redirect,
@@ -50,6 +50,7 @@ function App() {
               </Route>
               <Route path="/dashboard">
                 <HomeLayout />
+                <Link to="/session/123">Test</Link>
               </Route>
               <Route path="/session/:id">
                 <SocketProvider>

@@ -5,6 +5,7 @@ import {
   Route,
   Link,
   useRouteMatch,
+  useHistory,
 } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
@@ -18,12 +19,16 @@ function LinkTab(props) {
 
 export default function HomeLayout() {
   const [value, setValue] = React.useState(0);
+  const history = useHistory();
+  const { path, url } = useRouteMatch();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const { path, url } = useRouteMatch();
+  function handleSubmit(id) {
+    history.push(`/session/${id}`);
+  }
 
   return (
     <Router>
@@ -60,7 +65,7 @@ export default function HomeLayout() {
         >
           <Switch>
             <Route exact path={path}>
-              <ClassList />
+              <ClassList onSubmit={handleSubmit} />
             </Route>
             <Route path={`${path}/sessions`}>Sessions</Route>
             <Route path={`${path}/help`}>Help</Route>
