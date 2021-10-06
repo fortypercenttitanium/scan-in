@@ -116,7 +116,7 @@ module.exports = class Session {
     const failMessage = new SocketMessage({
       sender: 'server',
       message: {
-        event: 'scan-failed',
+        event: 'scan-fail',
         payload: { message: `Student ID #${studentID} not found in class.` },
       },
     });

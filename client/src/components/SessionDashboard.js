@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { SocketStore } from '../store/SocketProvider';
 import Paper from '@mui/material/Paper';
 import Numpad from './Numpad';
 
-function SessionDashboard({ id }) {
+function SessionDashboard() {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const { lastUpdate } = useContext(SocketStore);
 
   useEffect(() => {
     document.addEventListener('fullscreenchange', () => {
@@ -37,6 +39,7 @@ function SessionDashboard({ id }) {
       elevation={3}
       className="fullscreen"
     >
+      <p>Last update: {lastUpdate}</p>
       <Numpad isFullscreen={isFullscreen} toggleFullscreen={toggleFullscreen} />
     </Paper>
   );

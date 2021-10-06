@@ -103,8 +103,8 @@ function AddOrEditClass() {
     }
 
     const split = data.split(' ');
-    const firstName = split[1].replace(',', '');
-    const lastName = split[0];
+    const firstName = split[1];
+    const lastName = split[0].replace(',', '');
     const id = split[2].replace(/\(|\)/g, '');
 
     return {

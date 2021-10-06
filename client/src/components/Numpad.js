@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import BarcodeReader from 'react-barcode-reader';
+import { SocketStore } from '../store/SocketProvider';
 import { Paper, Button, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
@@ -16,6 +17,7 @@ const Item = styled(Button)(({ theme }) => ({
 
 function Numpad({ isFullscreen, toggleFullscreen }) {
   const [numpadDisplay, setNumpadDisplay] = useState('');
+  const { scanIn } = useContext(SocketStore);
 
   function handleNumberPress(e) {
     setNumpadDisplay(numpadDisplay + e.target.dataset.value);
@@ -35,11 +37,11 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
 
   function handleSubmit(data) {
     if (data) {
-      console.log('Submitting: ' + data);
+      scanIn(data);
       return handleClear();
     }
     if (numpadDisplay) {
-      console.log('Submitting: ' + Number(numpadDisplay));
+      scanIn(numpadDisplay);
       return handleClear();
     }
   }

@@ -6,7 +6,7 @@ import SessionDashboard from '../SessionDashboard';
 function SessionLayout() {
   const [sessionOpened, setSessionOpened] = useState(false);
   const { id } = useParams();
-  const { init, socket, sessionData } = useContext(SocketStore);
+  const { init, scanIn } = useContext(SocketStore);
 
   useEffect(() => {
     if (!sessionOpened) {
@@ -15,7 +15,11 @@ function SessionLayout() {
     }
   }, [init, id, sessionOpened]);
 
-  return sessionOpened ? <SessionDashboard id={id} /> : <div>Loading...</div>;
+  return sessionOpened ? (
+    <SessionDashboard id={id} scanIn={scanIn} />
+  ) : (
+    <div>Loading...</div>
+  );
 }
 
 export default SessionLayout;
