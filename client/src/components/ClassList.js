@@ -7,11 +7,18 @@ import {
   FormControl,
   Button,
   Stack,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from '@mui/material';
+import AddOrEditClass from './AddOrEditClass';
 
 function ClassList({ onSubmit: startSession }) {
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
+  const [dialogOpen, setDialogOpen] = useState('');
 
   useEffect(() => {
     async function getClasses() {
@@ -42,6 +49,9 @@ function ClassList({ onSubmit: startSession }) {
 
   return (
     <form onSubmit={handleSubmit}>
+      <Dialog open={dialogOpen === 'add'} onClose={() => setDialogOpen('')}>
+        <AddOrEditClass setDialogOpen={setDialogOpen} />
+      </Dialog>
       <Box
         m={'24px auto'}
         minWidth={240}
@@ -71,7 +81,11 @@ function ClassList({ onSubmit: startSession }) {
             justifyContent="center"
             m="24px auto"
           >
-            <Button variant="outlined" type="button">
+            <Button
+              onClick={() => setDialogOpen('add')}
+              variant="outlined"
+              type="button"
+            >
               Add class
             </Button>
             <Button variant="outlined" type="button">

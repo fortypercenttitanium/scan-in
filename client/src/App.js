@@ -50,7 +50,6 @@ function App() {
               </Route>
               <Route path="/dashboard">
                 <HomeLayout />
-                <Link to="/session/123">Test</Link>
               </Route>
               <Route path="/session/:id">
                 <SocketProvider>

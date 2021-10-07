@@ -7,7 +7,7 @@ import {
   FormHelperText,
 } from '@mui/material';
 
-function AddOrEditClass() {
+function AddOrEditClass({ setDialogOpen }) {
   const [className, setClassName] = useState('');
   const [studentData, setStudentData] = useState('');
   const [error, setError] = useState('');
@@ -78,7 +78,11 @@ function AddOrEditClass() {
             setMessage('');
             return setError(json.error);
           }
-          return setMessage('Class added successfully');
+          setClassName('');
+          setStudentData('');
+          setMessage('Class added successfully');
+
+          return setTimeout(() => setDialogOpen(''), 2000);
         }
       }
     } catch (err) {
@@ -116,17 +120,18 @@ function AddOrEditClass() {
 
   return (
     <Box
-      component="form"
+      component="div"
       sx={{
         '& .MuiTextField-root': {
           m: 1,
         },
         m: 'auto',
+        p: '36px',
         minWidth: '600px',
+        textAlign: 'center',
       }}
-      noValidate
-      onSubmit={handleSubmit}
     >
+      <h1>Add class</h1>
       <FormControl fullWidth>
         <TextField
           id="outlined-basic"
@@ -150,11 +155,12 @@ function AddOrEditClass() {
           <FormHelperText sx={{ color: 'green' }}>{message}</FormHelperText>
         )}
         <Button
+          onClick={handleSubmit}
           variant="contained"
           color="success"
           size="medium"
           sx={{ m: 'auto' }}
-          type="submit"
+          type="button"
         >
           Submit
         </Button>
