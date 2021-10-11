@@ -31,6 +31,30 @@ router.get('/classes', async (req, res, next) => {
   }
 });
 
+router.post('/studentIDs', async (req, res, next) => {
+  try {
+    const { students } = req.body;
+
+    const GET_STUDENTS_BY_IDS = gql`
+      query getStudentsByID($ids: [ID!]!) {
+        studentsByID(ids: $ids) {
+          id
+          firstName
+          lastName
+        }
+      }
+    `;
+
+    const { studentsByID: currentStudents } = await query(GET_STUDENTS_BY_IDS, {
+      ids: students,
+    });
+
+    res.json(currentStudents);
+  } catch (err) {
+    return next(err);
+  }
+});
+
 router.post('/students', async (req, res, next) => {
   try {
     const { students } = req.body;

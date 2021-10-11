@@ -13,7 +13,8 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@mui/material';
-import AddOrEditClass from './AddOrEditClass';
+import AddClass from './AddClass';
+import EditClass from './EditClass';
 
 function ClassList({ onSubmit: startSession }) {
   const [classes, setClasses] = useState([]);
@@ -50,7 +51,15 @@ function ClassList({ onSubmit: startSession }) {
   return (
     <form onSubmit={handleSubmit}>
       <Dialog open={dialogOpen === 'add'} onClose={() => setDialogOpen('')}>
-        <AddOrEditClass setDialogOpen={setDialogOpen} />
+        <AddClass setDialogOpen={setDialogOpen} />
+      </Dialog>
+      <Dialog open={dialogOpen === 'edit'} onClose={() => setDialogOpen('')}>
+        <EditClass
+          selectedClass={classes.find(
+            (classObj) => classObj.id === selectedClass,
+          )}
+          setDialogOpen={setDialogOpen}
+        />
       </Dialog>
       <Box
         m={'24px auto'}
@@ -88,7 +97,11 @@ function ClassList({ onSubmit: startSession }) {
             >
               Add class
             </Button>
-            <Button variant="outlined" type="button">
+            <Button
+              onClick={() => setDialogOpen('edit')}
+              variant="outlined"
+              type="button"
+            >
               Edit class
             </Button>
           </Stack>
