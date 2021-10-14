@@ -1,4 +1,5 @@
 import React, { createContext, useState } from 'react';
+import getLogTime from '../helperFunctions/getLogTime';
 export const SocketStore = createContext();
 let socket;
 
@@ -37,18 +38,15 @@ function SocketProvider({ children }) {
           (student) => student.id === studentID,
         );
 
-        const time = new Date(
-          Number(payload.log[payload.log.length - 1].timeStamp),
-        );
-
         setLastUpdate(
-          `${student.firstName} ${
-            student.lastName
-          } scanned in at ${time.toLocaleTimeString()}`,
+          `${student.firstName} ${student.lastName} scanned in at ${getLogTime(
+            payload.log,
+          )}`,
         );
       }
 
       if (event === 'session-opened') {
+        setLastUpdate(`Session opened at ${getLogTime(payload.log)}`);
         setSessionData(payload);
       }
 

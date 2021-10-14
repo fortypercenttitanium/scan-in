@@ -28,10 +28,12 @@ function SessionDashboard() {
   return (
     <Paper
       sx={{
-        m: 'auto',
-        p: 8,
+        m: 'auto auto 80px',
+        px: 12,
+        py: 4,
         maxWidth: 'md',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
