@@ -8,10 +8,6 @@ import {
   Button,
   Stack,
   Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
 } from '@mui/material';
 import AddClass from './AddClass';
 import EditClass from './EditClass';
@@ -20,6 +16,7 @@ function ClassList({ onSubmit: startSession }) {
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
   const [dialogOpen, setDialogOpen] = useState('');
+  const [dataIsStale, setDataIsStale] = useState(true);
 
   useEffect(() => {
     async function getClasses() {
@@ -30,14 +27,18 @@ function ClassList({ onSubmit: startSession }) {
         });
         if (response.ok) {
           const json = await response.json();
+          console.log('setting ', json);
           setClasses(json);
+          setDataIsStale(false);
         }
       } catch (err) {
         console.log(err);
       }
     }
-    getClasses();
-  }, [setClasses]);
+    if (dataIsStale) {
+      getClasses();
+    }
+  }, [setClasses, dataIsStale]);
 
   function handleClickSelect(e) {
     setSelectedClass(e.target.value);
@@ -51,7 +52,10 @@ function ClassList({ onSubmit: startSession }) {
   return (
     <form onSubmit={handleSubmit}>
       <Dialog open={dialogOpen === 'add'} onClose={() => setDialogOpen('')}>
-        <AddClass setDialogOpen={setDialogOpen} />
+        <AddClass
+          setDialogOpen={setDialogOpen}
+          setDataIsStale={setDataIsStale}
+        />
       </Dialog>
       <Dialog open={dialogOpen === 'edit'} onClose={() => setDialogOpen('')}>
         <EditClass
@@ -59,6 +63,7 @@ function ClassList({ onSubmit: startSession }) {
             (classObj) => classObj.id === selectedClass,
           )}
           setDialogOpen={setDialogOpen}
+          setDataIsStale={setDataIsStale}
         />
       </Dialog>
       <Box
@@ -101,6 +106,7 @@ function ClassList({ onSubmit: startSession }) {
               onClick={() => setDialogOpen('edit')}
               variant="outlined"
               type="button"
+              disabled={!selectedClass}
             >
               Edit class
             </Button>

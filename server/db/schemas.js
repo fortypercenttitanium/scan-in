@@ -6,7 +6,7 @@ const typeDefs = gql`
     userByID(id: ID!): User
     class(id: ID!, userID: ID!): Class
     classList(userID: ID!): [Class]!
-    classByName(name: String!, userID: ID!): Class
+    classByName(name: String!, userID: ID!, id: ID): Class
     student(id: ID!): Student
     studentsByID(ids: [ID]!): [Student]!
     studentList(classID: ID): [Student]!
@@ -29,6 +29,7 @@ const typeDefs = gql`
     addStudents(students: [StudentInput!]!): [Student]!
     updateStudents(input: [StudentInput!]!): [Student]!
     editStudents(input: [StudentInput]!): Class
+    removeClassFromStudents(classID: ID!, studentIDs: [ID!]!): [Student]!
     addLogEntry(event: String!, payload: String, sessionID: ID!): Session
     addSession(classID: ID!): Session
     editSession(teacherID: ID!, sessionID: ID!, endTime: String): Session

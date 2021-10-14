@@ -111,7 +111,7 @@ router.post('/class', async (req, res, next) => {
 
     const CLASS_BY_NAME = gql`
       query Class($name: String!, $userID: ID!) {
-        classByName(name: $name, userID: $userID) {
+        classByName(name: $name, userID: $userID, id: null) {
           id
         }
       }
@@ -135,6 +135,7 @@ router.post('/class', async (req, res, next) => {
     const nameTaken = await query(CLASS_BY_NAME, {
       name: classData.name,
       userID: req.user.id,
+      id: null,
     });
 
     if (nameTaken.classByName) {
@@ -142,6 +143,131 @@ router.post('/class', async (req, res, next) => {
     }
 
     const classResult = await query(NEW_CLASS, {
+      ...classData,
+      students: classData.students.map((student) => student.id),
+    });
+
+    res.json(JSON.stringify(classResult));
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.put('/students', async (req, res, next) => {
+  try {
+    const { students, classID } = req.body;
+
+    const GET_STUDENTS_BY_IDS = gql`
+      query getStudentsByID($ids: [ID!]!) {
+        studentsByID(ids: $ids) {
+          id
+        }
+      }
+    `;
+
+    const GET_STUDENTS_BY_CLASS = gql`
+      query ($classID: ID!) {
+        studentList(classID: $classID) {
+          id
+        }
+      }
+    `;
+
+    // gather student IDs from students objects
+    const updatedStudentIDs = students.map((student) => student.id);
+
+    // get list of students in the class, remove students who aren't included in the payload
+    const classStudents = await query(GET_STUDENTS_BY_CLASS, { classID });
+    const studentsToRemove = classStudents.studentList
+      .filter(({ id }) => !updatedStudentIDs.includes(id))
+      .map((student) => student.id);
+
+    if (studentsToRemove.length) {
+      const REMOVE_CLASS_FROM_STUDENTS = gql`
+        mutation ($classID: ID!, $studentIDs: [ID!]!) {
+          removeClassFromStudents(classID: $classID, studentIDs: $studentIDs) {
+            id
+            classes
+          }
+        }
+      `;
+
+      await query(REMOVE_CLASS_FROM_STUDENTS, {
+        classID,
+        studentIDs: studentsToRemove,
+      });
+    }
+
+    const { studentsByID: currentStudents } = await query(GET_STUDENTS_BY_IDS, {
+      ids: updatedStudentIDs,
+    });
+
+    const newStudents = students.filter(
+      (student) =>
+        !currentStudents.some(
+          (currentStudent) => student.id === currentStudent.id,
+        ),
+    );
+
+    if (newStudents.length) {
+      const ADD_STUDENTS = gql`
+        mutation AddStudents($students: [StudentInput!]!) {
+          addStudents(students: $students) {
+            firstName
+            lastName
+            id
+          }
+        }
+      `;
+
+      await query(ADD_STUDENTS, { students: newStudents });
+      const { studentsByID } = await query(GET_STUDENTS_BY_IDS, {
+        ids: updatedStudentIDs,
+      });
+      res.json(studentsByID);
+    }
+
+    res.json(currentStudents);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.put('/class', async (req, res, next) => {
+  try {
+    const { classData } = req.body;
+    classData.owner = req.user.id;
+
+    const EDIT_CLASS = gql`
+      mutation ($id: ID!, $students: [ID]!, $name: String!, $owner: ID!) {
+        editClass(id: $id, name: $name, students: $students, owner: $owner) {
+          id
+          students
+          owner
+          name
+        }
+      }
+    `;
+
+    const CLASS_BY_NAME = gql`
+      query Class($name: String!, $userID: ID!, $id: ID) {
+        classByName(name: $name, userID: $userID, id: $id) {
+          id
+        }
+      }
+    `;
+
+    const nameTaken = await query(CLASS_BY_NAME, {
+      name: classData.name,
+      userID: req.user.id,
+      id: classData.id,
+    });
+
+    if (nameTaken.classByName) {
+      return res.json(JSON.stringify({ error: 'Class name already exists' }));
+    }
+
+    const classResult = await query(EDIT_CLASS, {
       ...classData,
       students: classData.students.map((student) => student.id),
     });

@@ -7,16 +7,18 @@ import {
   FormHelperText,
 } from '@mui/material';
 
-function AddOrEditClass({ setDialogOpen, type, selectedClass }) {
+function AddClass({ setDialogOpen, setDataIsStale }) {
   const [className, setClassName] = useState('');
   const [studentData, setStudentData] = useState('');
   const [error, setError] = useState('');
+  const [disableButton, setDisableButton] = useState(false);
   const [message, setMessage] = useState('');
   const studentDataFormat = 'Last, First (ID)';
 
   async function handleSubmit(e) {
     try {
       e.preventDefault();
+      setDisableButton(true);
       setError('');
       setMessage('Adding students...');
 
@@ -25,11 +27,6 @@ function AddOrEditClass({ setDialogOpen, type, selectedClass }) {
       const classNameTrimmed = className.trim();
       setStudentData(studentDataTrimmed);
       setClassName(classNameTrimmed);
-
-      if (!classNameTrimmed) {
-        setMessage('');
-        return setError('Invalid class name');
-      }
 
       // convert to array at newlines
       const split = studentDataTrimmed.split('\n');
@@ -47,12 +44,14 @@ function AddOrEditClass({ setDialogOpen, type, selectedClass }) {
               `Invalid student entry on line ${index + 1}
               Please use the format: ${studentDataFormat}`,
             );
+            setDisableButton(false);
           }
         });
       }
 
       if (hasClassNameError) {
         setMessage('');
+        setDisableButton(false);
         return setError('Invalid class name');
       }
 
@@ -88,8 +87,9 @@ function AddOrEditClass({ setDialogOpen, type, selectedClass }) {
           setClassName('');
           setStudentData('');
           setMessage('Class added successfully');
+          setDataIsStale(true);
 
-          return setTimeout(() => setDialogOpen(''), 2000);
+          return setTimeout(() => setDialogOpen(''), 1000);
         }
       }
     } catch (err) {
@@ -168,6 +168,7 @@ function AddOrEditClass({ setDialogOpen, type, selectedClass }) {
           size="medium"
           sx={{ m: 'auto' }}
           type="button"
+          disabled={disableButton}
         >
           Submit
         </Button>
@@ -176,4 +177,4 @@ function AddOrEditClass({ setDialogOpen, type, selectedClass }) {
   );
 }
 
-export default AddOrEditClass;
+export default AddClass;

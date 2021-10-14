@@ -8,11 +8,11 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-// TODO Fix the submit. I'm too tired.
-function AddOrEditClass({ setDialogOpen, selectedClass }) {
+function EditClass({ setDialogOpen, selectedClass, setDataIsStale }) {
   const [className, setClassName] = useState(selectedClass.name || '');
   const [studentData, setStudentData] = useState('');
   const [loading, setLoading] = useState(true);
+  const [disableButton, setDisableButton] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const studentDataFormat = 'Last, First (ID)';
@@ -39,25 +39,24 @@ function AddOrEditClass({ setDialogOpen, selectedClass }) {
       setLoading(false);
     }
 
-    fetchStudents();
-  }, [selectedClass.students]);
+    // don't fetch if button is disabled - this means the data is still updating
+    if (!disableButton) {
+      fetchStudents();
+    }
+  }, [selectedClass.students, disableButton]);
 
   async function handleSubmit(e) {
     try {
       e.preventDefault();
+      setDisableButton(true);
       setError('');
-      setMessage('Adding students...');
+      setMessage('Editing students...');
 
       // trim text box and reset
       const studentDataTrimmed = studentData.trim();
       const classNameTrimmed = className.trim();
       setStudentData(studentDataTrimmed);
       setClassName(classNameTrimmed);
-
-      if (!classNameTrimmed) {
-        setMessage('');
-        return setError('Invalid class name');
-      }
 
       // convert to array at newlines
       const split = studentDataTrimmed.split('\n');
@@ -71,6 +70,7 @@ function AddOrEditClass({ setDialogOpen, selectedClass }) {
         return parsedStudentData.forEach((data, index) => {
           if (!data) {
             setMessage('');
+            setDisableButton(false);
             setError(
               `Invalid student entry on line ${index + 1}
               Please use the format: ${studentDataFormat}`,
@@ -81,28 +81,36 @@ function AddOrEditClass({ setDialogOpen, selectedClass }) {
 
       if (hasClassNameError) {
         setMessage('');
+        setDisableButton(false);
         return setError('Invalid class name');
       }
 
       const studentsResult = await fetch('/db/students', {
-        method: 'POST',
+        method: 'PUT',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ students: parsedStudentData }),
+        body: JSON.stringify({
+          students: parsedStudentData,
+          classID: selectedClass.id,
+        }),
       });
 
       if (studentsResult.ok) {
-        setMessage('Added students, now adding class...');
+        setMessage('Edited students, now editing class...');
         const classResult = await fetch('/db/class', {
-          method: 'POST',
+          method: 'PUT',
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            classData: { name: classNameTrimmed, students: parsedStudentData },
+            classData: {
+              name: classNameTrimmed,
+              students: parsedStudentData,
+              id: selectedClass.id,
+            },
           }),
         });
 
@@ -115,9 +123,10 @@ function AddOrEditClass({ setDialogOpen, selectedClass }) {
           }
           setClassName('');
           setStudentData('');
-          setMessage('Class added successfully');
+          setMessage('Class edited successfully');
+          setDataIsStale(true);
 
-          return setTimeout(() => setDialogOpen(''), 2000);
+          return setTimeout(() => setDialogOpen(''), 1000);
         }
       }
     } catch (err) {
@@ -199,10 +208,9 @@ function AddOrEditClass({ setDialogOpen, selectedClass }) {
             size="medium"
             sx={{ m: 'auto' }}
             type="button"
-            disabled={loading}
+            disabled={loading || disableButton}
           >
-            {/* Update class */}
-            Fix me first!
+            Update class
           </Button>
         </FormControl>
       )}
@@ -210,4 +218,4 @@ function AddOrEditClass({ setDialogOpen, selectedClass }) {
   );
 }
 
-export default AddOrEditClass;
+export default EditClass;

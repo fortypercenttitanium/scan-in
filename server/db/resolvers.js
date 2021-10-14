@@ -68,12 +68,14 @@ const resolvers = {
     },
     async classByName(_, args) {
       try {
-        const { name, userID } = args;
+        const { name, userID, id } = args;
 
         const snap = await classesRef
           .where('owner', '==', userID)
           .where('name', '==', name)
+          .where('id', '!=', id)
           .get();
+
         const docs = snap.docs.map((doc) => doc.data());
 
         const result = docs[0] || null;
@@ -107,8 +109,8 @@ const resolvers = {
     },
     async studentList(_, args) {
       try {
-        const snapshot = await studentsRef.docs.get();
-        const data = snapshot.map((doc) => doc.data());
+        const snapshot = await studentsRef.get();
+        const data = snapshot.docs.map((doc) => doc.data());
 
         if (args.classID) {
           return data.filter((student) =>
@@ -215,7 +217,7 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
-    async editClass(parent, args) {
+    async editClass(_, args) {
       try {
         const { name, students, owner, id } = args;
         const editedData = {
@@ -225,10 +227,40 @@ const resolvers = {
 
         await classesRef.doc(id).set(editedData, { merge: true });
 
-        const snap = classesRef.where('owner', '==', owner).get();
+        const snap = await classesRef.where('id', '==', id).get();
+        const newClassList = snap.docs[0].data();
 
-        const newClassList = snap.docs.map((doc) => doc.data());
         return newClassList;
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
+    async removeClassFromStudents(_, args) {
+      try {
+        const batch = db.batch();
+        const { classID, studentIDs } = args;
+
+        // get all students in query
+        const studentsSnap = await studentsRef.get();
+        const queriedStudents = studentsSnap.docs
+          .map((doc) => doc.data())
+          .filter((student) => studentIDs.includes(student.id));
+
+        // remove the class from their list
+        const newStudents = queriedStudents.map((student) => ({
+          ...student,
+          classes: student.classes.filter(
+            (currentClass) => currentClass !== classID,
+          ),
+        }));
+
+        newStudents.forEach((student) => {
+          batch.set(studentsRef.doc(student.id), student);
+        });
+
+        await batch.commit();
+
+        return newStudents;
       } catch (err) {
         throw new ApolloError(err);
       }
