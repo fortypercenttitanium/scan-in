@@ -235,6 +235,17 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
+    async deleteClass(_, args) {
+      try {
+        const { id } = args;
+
+        await classesRef.doc(id).delete();
+
+        return { id };
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
     async removeClassFromStudents(_, args) {
       try {
         const batch = db.batch();

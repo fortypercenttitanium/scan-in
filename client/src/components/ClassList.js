@@ -27,7 +27,6 @@ function ClassList({ onSubmit: startSession }) {
         });
         if (response.ok) {
           const json = await response.json();
-          console.log('setting ', json);
           setClasses(json);
           setDataIsStale(false);
         }
@@ -47,6 +46,22 @@ function ClassList({ onSubmit: startSession }) {
   function handleSubmit(e) {
     e.preventDefault();
     startSession(selectedClass);
+  }
+
+  async function handleDelete(e) {
+    e.preventDefault();
+
+    await fetch('/db/class', {
+      method: 'DELETE',
+      credentials: 'include',
+      body: JSON.stringify({ classData: selectedClass }),
+      headers: {
+        'Content-type': 'application/json',
+      },
+    });
+
+    setSelectedClass('');
+    setDataIsStale(true);
   }
 
   return (
@@ -109,6 +124,14 @@ function ClassList({ onSubmit: startSession }) {
               disabled={!selectedClass}
             >
               Edit class
+            </Button>
+            <Button
+              onClick={handleDelete}
+              variant="outlined"
+              type="button"
+              disabled={!selectedClass}
+            >
+              Delete class
             </Button>
           </Stack>
           <Button variant="contained" type="submit" size="large">

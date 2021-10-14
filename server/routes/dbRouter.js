@@ -279,19 +279,43 @@ router.put('/class', async (req, res, next) => {
 });
 
 router.get('/class', async (req, res) => {
-  const CLASS = gql`
-    query Class($id: ID!, $userID: ID!) {
-      class(id: $id, userID: $userID) {
-        id
-        name
-        students
+  try {
+    const CLASS = gql`
+      query Class($id: ID!, $userID: ID!) {
+        class(id: $id, userID: $userID) {
+          id
+          name
+          students
+        }
       }
-    }
-  `;
+    `;
 
-  const result = await query(CLASS, { id: req.body.id, userID: req.user.id });
+    const result = await query(CLASS, { id: req.body.id, userID: req.user.id });
 
-  res.json(result.class);
+    res.json(result.class);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.delete('/class', async (req, res, next) => {
+  try {
+    const { classData } = req.body;
+
+    const DELETE_CLASS = gql`
+      mutation ($id: ID!) {
+        deleteClass(id: $id) {
+          id
+        }
+      }
+    `;
+
+    const confirmation = await query(DELETE_CLASS, { id: classData });
+
+    res.json(confirmation);
+  } catch (err) {
+    return next(err);
+  }
 });
 
 router.post('/barcodes', async (req, res, next) => {

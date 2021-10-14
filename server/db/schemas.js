@@ -25,7 +25,7 @@ const typeDefs = gql`
     deleteUser(id: ID!): ID
     addClass(name: String!, students: [ID]!, owner: ID!, id: ID!): Class!
     editClass(name: String!, students: [ID]!, owner: ID!, id: ID!): Class!
-    deleteClass(id: ID!): [Class]!
+    deleteClass(id: ID!): Class!
     addStudents(students: [StudentInput!]!): [Student]!
     updateStudents(input: [StudentInput!]!): [Student]!
     editStudents(input: [StudentInput]!): Class
