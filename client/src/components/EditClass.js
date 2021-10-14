@@ -6,7 +6,9 @@ import {
   Button,
   FormHelperText,
   CircularProgress,
+  Stack,
 } from '@mui/material';
+import parseStudentData from '../helperFunctions/parseStudentData';
 
 function EditClass({ setDialogOpen, selectedClass, setDataIsStale }) {
   const [className, setClassName] = useState(selectedClass.name || '');
@@ -136,32 +138,24 @@ function EditClass({ setDialogOpen, selectedClass, setDataIsStale }) {
     }
   }
 
+  function formatStudentList() {
+    // split into array
+    const split = studentData.split('\n');
+
+    // remove numbers
+    const numbersRemoved = split.map((entry) =>
+      entry.replace(/\d+\./, '').trim(),
+    );
+
+    setStudentData(numbersRemoved.join('\n'));
+  }
+
   function handleNameChange(e) {
     setClassName(e.target.value);
   }
 
   function handleStudentChange(e) {
     setStudentData(e.target.value);
-  }
-
-  function parseStudentData(data) {
-    // TODO: adjust to account for two-word names, or inclusion of middle name
-    const regex = /^[A-Za-z']+, [A-Za-z\-']+ \(\d{5,}\)$/;
-
-    if (!regex.test(data)) {
-      return null;
-    }
-
-    const split = data.split(' ');
-    const firstName = split[1];
-    const lastName = split[0].replace(',', '');
-    const id = split[2].replace(/\(|\)/g, '');
-
-    return {
-      firstName,
-      lastName,
-      id,
-    };
   }
 
   return (
@@ -203,17 +197,29 @@ function EditClass({ setDialogOpen, selectedClass, setDataIsStale }) {
           {message && (
             <FormHelperText sx={{ color: 'green' }}>{message}</FormHelperText>
           )}
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            color="success"
-            size="medium"
-            sx={{ m: 'auto' }}
-            type="button"
-            disabled={loading || disableButton}
-          >
-            Update class
-          </Button>
+          <Stack direction="row" spacing={2}>
+            <Button
+              onClick={formatStudentList}
+              variant="contained"
+              size="medium"
+              sx={{ m: 'auto' }}
+              type="button"
+              disabled={!studentData || disableButton}
+            >
+              Format list
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              color="success"
+              size="medium"
+              sx={{ m: 'auto' }}
+              type="button"
+              disabled={loading || disableButton}
+            >
+              Update class
+            </Button>
+          </Stack>
         </FormControl>
       )}
     </Box>
