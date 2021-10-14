@@ -53,14 +53,16 @@ function EditClass({ setDialogOpen, selectedClass, setDataIsStale }) {
       setMessage('Editing students...');
 
       // trim text box and reset
-      const studentDataTrimmed = studentData.trim();
       const classNameTrimmed = className.trim();
-      setStudentData(studentDataTrimmed);
       setClassName(classNameTrimmed);
 
       // convert to array at newlines
-      const split = studentDataTrimmed.split('\n');
-      const parsedStudentData = split.map((data) => parseStudentData(data));
+      const studentDataFormatted = studentData
+        .split('\n')
+        .map((data) => data.trim());
+      const parsedStudentData = studentDataFormatted.map((data) =>
+        parseStudentData(data),
+      );
 
       // validate data
       const hasStudentError = !parsedStudentData.every((data) => data);
