@@ -5,10 +5,10 @@ export default function parseStudentData(data) {
     return null;
   }
 
-  const split = data.split(' ');
-  const firstName = split[1];
+  const split = data.split(' ').map((data) => data.trim());
   const lastName = split[0].replace(',', '');
-  const id = split[2].replace(/\(|\)/g, '');
+  const firstName = split.slice(1, split.length - 1).join(' ');
+  const id = split[split.length - 1].replace(/\(|\)/g, '');
 
   return {
     firstName,

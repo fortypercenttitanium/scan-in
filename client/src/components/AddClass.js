@@ -8,6 +8,7 @@ import {
   Stack,
 } from '@mui/material';
 import parseStudentData from '../helperFunctions/parseStudentData';
+import formatStudentList from '../helperFunctions/formatStudentList';
 
 function AddClass({ setDialogOpen, setDataIsStale }) {
   const [className, setClassName] = useState('');
@@ -101,18 +102,6 @@ function AddClass({ setDialogOpen, setDataIsStale }) {
     }
   }
 
-  function formatStudentList() {
-    // split into array
-    const split = studentData.split('\n');
-
-    // remove numbers
-    const numbersRemoved = split.map((entry) =>
-      entry.replace(/\d+\./, '').trim(),
-    );
-
-    setStudentData(numbersRemoved.join('\n'));
-  }
-
   function handleNameChange(e) {
     setClassName(e.target.value);
   }
@@ -159,7 +148,7 @@ function AddClass({ setDialogOpen, setDataIsStale }) {
         )}
         <Stack direction="row" spacking={2}>
           <Button
-            onClick={formatStudentList}
+            onClick={() => setStudentData(formatStudentList(studentData))}
             variant="contained"
             size="medium"
             sx={{ m: 'auto' }}
