@@ -7,6 +7,8 @@ function SocketProvider({ children }) {
   const [sessionData, setSessionData] = useState(null);
   const [lastUpdate, setLastUpdate] = useState('');
 
+  // TODO: Shape frontend data here, then pass to the context to make rendering easier
+
   function init(classID) {
     console.log(`Initializing class session: ${classID}`);
     socket = new WebSocket('ws://localhost:5001');

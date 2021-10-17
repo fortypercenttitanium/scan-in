@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import BarcodeReader from 'react-barcode-reader';
 import { SocketStore } from '../store/SocketProvider';
 import { Paper, Button, Stack } from '@mui/material';

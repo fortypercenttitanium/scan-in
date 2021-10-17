@@ -4,7 +4,6 @@ import {
   Redirect,
   Switch,
   Route,
-  Link,
 } from 'react-router-dom';
 import './App.css';
 import { Box, Paper, CssBaseline, Typography } from '@mui/material';
