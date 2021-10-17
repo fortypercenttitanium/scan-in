@@ -9,9 +9,9 @@ import FullscreenExit from '@mui/icons-material/FullscreenExit';
 
 const Item = styled(Button)(({ theme }) => ({
   ...theme.typography.body2,
-  height: theme.spacing(9),
+  height: theme.spacing(7),
   fontSize: '1rem',
-  width: theme.spacing(9),
+  width: theme.spacing(7),
   textAlign: 'center',
 }));
 
@@ -75,7 +75,7 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
     <Paper
       variant="outlined"
       sx={{
-        margin: '12px auto',
+        margin: '12px auto auto',
         p: '12px',
         backgroundColor: grey[300],
         boxShadow: '4px 4px 4px gray',
@@ -85,9 +85,10 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
       <BarcodeReader onScan={handleScan} onError={handleScanError} />
       <Paper
         sx={{
-          height: '60px',
-          padding: '12px',
-          fontSize: '1.5rem',
+          height: '42px',
+          p: 1,
+          mx: 1,
+          fontSize: '1.2rem',
           textAlign: 'center',
           alignItems: 'center',
         }}
@@ -98,7 +99,7 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
         direction="row"
         justifyContent="center"
         alignItems="center"
-        spacing={2}
+        spacing={1}
         margin="8px"
       >
         <Item data-type="number" data-value={1} variant="contained">
@@ -115,7 +116,7 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
         direction="row"
         justifyContent="center"
         alignItems="center"
-        spacing={2}
+        spacing={1}
         margin="8px"
       >
         <Item data-type="number" data-value={4} variant="contained">
@@ -132,7 +133,7 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
         direction="row"
         justifyContent="center"
         alignItems="center"
-        spacing={2}
+        spacing={1}
         margin="8px"
       >
         <Item data-type="number" data-value={7} variant="contained">
@@ -149,7 +150,7 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
         direction="row"
         justifyContent="center"
         alignItems="center"
-        spacing={2}
+        spacing={1}
         margin="8px"
       >
         <Item data-type="back" variant="contained">
@@ -171,7 +172,7 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
       >
         <Button
           size="large"
-          sx={{ p: '24px', flex: 1 }}
+          sx={{ p: '14px', flex: 1 }}
           data-type="clear"
           variant="contained"
         >

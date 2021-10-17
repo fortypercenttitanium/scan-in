@@ -16,15 +16,11 @@ function Copyright() {
   );
 }
 
-export default function StickyFooter() {
+export default function Footer() {
   return (
     <Box
       component="footer"
       sx={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
         py: 3,
         px: 2,
         mt: 'auto',
