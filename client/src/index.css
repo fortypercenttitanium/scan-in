@@ -7,6 +7,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  min-height: 100vh;
+  display: flex;
+}
+
 @font-face {
   font-family: 'StarJedi';
   src: url(./fonts/Starjedi.ttf) format('truetype');
