@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import getLogTime from '../helperFunctions/getLogTime';
 export const SocketStore = createContext();
 let socket;
@@ -6,8 +6,33 @@ let socket;
 function SocketProvider({ children }) {
   const [sessionData, setSessionData] = useState(null);
   const [lastUpdate, setLastUpdate] = useState('');
+  const [studentStatus, setStudentStatus] = useState([]);
 
-  // TODO: Shape frontend data here, then pass to the context to make rendering easier
+  // Create useable student data
+  useEffect(() => {
+    if (sessionData && sessionData.students?.length) {
+      const students = sessionData.students.map((student) => {
+        let status = 'absent';
+        let signInTime = null;
+
+        const signInData = sessionData.log.filter(
+          (log) => log.event === 'scan-in' && log.payload === student.id,
+        );
+        if (signInData.length) {
+          status = 'present';
+          signInTime = signInData[0].timeStamp;
+        }
+
+        return {
+          ...student,
+          status,
+          signInTime,
+        };
+      });
+
+      setStudentStatus(students);
+    }
+  }, [sessionData]);
 
   function init(classID) {
     console.log(`Initializing class session: ${classID}`);
@@ -72,7 +97,9 @@ function SocketProvider({ children }) {
   }
 
   return (
-    <SocketStore.Provider value={{ init, sessionData, scanIn, lastUpdate }}>
+    <SocketStore.Provider
+      value={{ init, sessionData, scanIn, lastUpdate, studentStatus }}
+    >
       {children}
     </SocketStore.Provider>
   );

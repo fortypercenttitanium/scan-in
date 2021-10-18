@@ -14,7 +14,7 @@ function SessionLayout() {
   const [sessionOpened, setSessionOpened] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { id } = useParams();
-  const { init, lastUpdate, sessionData } = useContext(SocketStore);
+  const { init, lastUpdate, studentStatus } = useContext(SocketStore);
 
   const matches = useMediaQuery('(max-width:768px)');
 
@@ -52,10 +52,15 @@ function SessionLayout() {
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
+        height: '800px',
       }}
     >
       <Box
-        sx={{ display: 'flex', justifyContent: 'space-between', flexGrow: '1' }}
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          maxHeight: '20%',
+        }}
       >
         <Typography variant="p" sx={{ m: 4 }}>
           Back to classes
@@ -69,7 +74,7 @@ function SessionLayout() {
           Settings
         </Typography>
       </Box>
-      <Box sx={{ display: 'flex', flexGrow: '3', gap: '4px' }}>
+      <Box sx={{ display: 'flex', gap: '4px', maxHeight: '80%' }}>
         <Box
           sx={{
             display: matches ? 'none' : 'grid',
@@ -79,13 +84,25 @@ function SessionLayout() {
           }}
         >
           <Box>
-            <p>Present:</p>
-            <p>Absent:</p>
+            <p>
+              Present:{' '}
+              {
+                studentStatus.filter((student) => student.status === 'present')
+                  .length
+              }
+            </p>
+            <p>
+              Absent:{' '}
+              {
+                studentStatus.filter((student) => student.status === 'absent')
+                  .length
+              }
+            </p>
           </Box>
           <Box>
             <h3>Sign-in deadline: 10:30am</h3>
           </Box>
-          <SessionStudentList data={sessionData} />
+          <SessionStudentList data={studentStatus} />
           <Box sx={{ textAlign: 'center' }}>
             <p>Sign in expires: 12:30pm</p>
             <p>Change expiration time in settings</p>
