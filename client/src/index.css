@@ -12,6 +12,10 @@ body {
   display: flex;
 }
 
+a {
+  text-decoration: none;
+}
+
 @font-face {
   font-family: 'StarJedi';
   src: url(./fonts/Starjedi.ttf) format('truetype');

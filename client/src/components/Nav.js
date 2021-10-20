@@ -11,9 +11,7 @@ function Nav() {
           <Typography variant="h4">Hi, {userData.firstName}</Typography>
         ) : (
           <a href="http://localhost:5000/auth/microsoft">
-            <Typography variant="h2" component="h3">
-              Login
-            </Typography>
+            <Typography variant="h4">Login</Typography>
           </a>
         )}
       </Box>

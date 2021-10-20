@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory, Link } from 'react-router-dom';
 import { SocketStore } from '../../store/SocketProvider';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -17,6 +17,8 @@ function SessionLayout() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { id } = useParams();
   const { init, lastUpdate, studentStatus } = useContext(SocketStore);
+
+  const history = useHistory();
 
   const matches = useMediaQuery('(max-width:768px)');
 
@@ -45,6 +47,10 @@ function SessionLayout() {
     return element.requestFullscreen();
   }
 
+  function handleClickBack() {
+    history.push('/dashboard');
+  }
+
   return sessionOpened ? (
     <Paper
       sx={{
@@ -62,19 +68,21 @@ function SessionLayout() {
           display: 'flex',
           justifyContent: 'space-between',
           maxHeight: '20%',
+          alignItems: 'center',
+          mx: 3,
         }}
       >
-        <Typography variant="p" sx={{ m: 4 }}>
-          Back to classes
-        </Typography>
+        <Link to="/dashboard">
+          <Typography variant="p">&lt; Back to classes</Typography>
+        </Link>
         <Box sx={{ display: 'block', textAlign: 'center' }}>
           <h1>Class Name</h1>
           <h2>Date</h2>
           <h3>Time</h3>
         </Box>
-        <Typography variant="p" sx={{ m: 4 }}>
-          Settings
-        </Typography>
+        <Link to="#">
+          <Typography variant="p">Settings</Typography>
+        </Link>
       </Box>
       <Box sx={{ display: 'flex', gap: '4px', maxHeight: '80%' }}>
         <Box
