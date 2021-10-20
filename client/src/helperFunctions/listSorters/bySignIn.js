@@ -11,14 +11,14 @@ export default function bySignIn(students, status) {
     if (!studentB.signInTime) {
       return -2;
     }
-    return Number(studentA.signInTime) < Number(studentB.signInTime) ? -1 : 1;
+    return Number(studentA.signInTime) > Number(studentB.signInTime) ? -1 : 1;
   }
 
   function absentFirst(studentA, studentB) {
     // if absent, sort first, if present, sort by reverse sign in time
     return studentA.status === 'absent'
       ? -2
-      : Number(studentA.signInTime) > Number(studentB.signInTime)
+      : Number(studentA.signInTime) < Number(studentB.signInTime)
       ? -1
       : 1;
   }

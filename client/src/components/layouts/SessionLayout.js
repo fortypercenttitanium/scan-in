@@ -9,25 +9,39 @@ import Stack from '@mui/material/Stack';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Numpad from '../Numpad';
 import SessionStudentList from '../SessionStudentList';
-// import bySignIn from '../../helperFunctions/listSorters/bySignIn';
-import byName from '../../helperFunctions/listSorters/byName';
+import bySignIn from '../../helperFunctions/listSorters/bySignIn';
+// import byName from '../../helperFunctions/listSorters/byName';
 
 function SessionLayout() {
   const [sessionOpened, setSessionOpened] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [clock, setClock] = useState(new Date().toLocaleTimeString());
   const { id } = useParams();
-  const { init, lastUpdate, studentStatus } = useContext(SocketStore);
+  const { init, lastUpdate, studentStatus, sessionData } =
+    useContext(SocketStore);
 
   const history = useHistory();
 
   const matches = useMediaQuery('(max-width:768px)');
 
+  // tick clock
+  useEffect(() => {
+    setInterval(() => {
+      setClock(new Date().toLocaleTimeString());
+    }, 1000);
+  }, []);
+
   useEffect(() => {
     if (!sessionOpened) {
-      setSessionOpened(true);
       init(id);
     }
   }, [init, id, sessionOpened]);
+
+  useEffect(() => {
+    if (sessionData) {
+      setSessionOpened(true);
+    }
+  }, [sessionData]);
 
   useEffect(() => {
     document.addEventListener('fullscreenchange', () => {
@@ -76,9 +90,9 @@ function SessionLayout() {
           <Typography variant="p">&lt; Back to classes</Typography>
         </Link>
         <Box sx={{ display: 'block', textAlign: 'center' }}>
-          <h1>Class Name</h1>
-          <h2>Date</h2>
-          <h3>Time</h3>
+          <h1>{sessionData.className}</h1>
+          <h2>{new Date().toLocaleDateString()}</h2>
+          <h3>{clock}</h3>
         </Box>
         <Link to="#">
           <Typography variant="p">Settings</Typography>
@@ -109,10 +123,10 @@ function SessionLayout() {
               }
             </p>
           </Box>
-          <Box>
+          <Box sx={{ textAlign: 'center' }}>
             <h3>Sign-in deadline: 10:30am</h3>
           </Box>
-          <SessionStudentList data={byName(studentStatus, 'last')} />
+          <SessionStudentList data={bySignIn(studentStatus, 'present')} />
           <Box sx={{ textAlign: 'center' }}>
             <p>Sign in expires: 12:30pm</p>
             <p>Change expiration time in settings</p>

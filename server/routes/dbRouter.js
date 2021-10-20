@@ -224,7 +224,7 @@ router.put('/students', async (req, res, next) => {
       const { studentsByID } = await query(GET_STUDENTS_BY_IDS, {
         ids: updatedStudentIDs,
       });
-      res.json(studentsByID);
+      return res.json(studentsByID);
     }
 
     res.json(currentStudents);

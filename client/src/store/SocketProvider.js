@@ -44,6 +44,7 @@ function SocketProvider({ children }) {
 
       const { event, payload } = messageData.message;
 
+      // todo: check for existing session
       if (event === 'socket-connected') {
         socket.send(
           JSON.stringify({
