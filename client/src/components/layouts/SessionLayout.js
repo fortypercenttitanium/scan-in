@@ -9,6 +9,8 @@ import Stack from '@mui/material/Stack';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Numpad from '../Numpad';
 import SessionStudentList from '../SessionStudentList';
+// import bySignIn from '../../helperFunctions/listSorters/bySignIn';
+import byName from '../../helperFunctions/listSorters/byName';
 
 function SessionLayout() {
   const [sessionOpened, setSessionOpened] = useState(false);
@@ -44,10 +46,10 @@ function SessionLayout() {
   }
 
   return sessionOpened ? (
-    <Box
+    <Paper
       sx={{
         m: 2,
-        border: '1px solid red',
+        p: 2,
         gap: '12px',
         flex: 1,
         display: 'flex',
@@ -102,7 +104,7 @@ function SessionLayout() {
           <Box>
             <h3>Sign-in deadline: 10:30am</h3>
           </Box>
-          <SessionStudentList data={studentStatus} />
+          <SessionStudentList data={byName(studentStatus, 'last')} />
           <Box sx={{ textAlign: 'center' }}>
             <p>Sign in expires: 12:30pm</p>
             <p>Change expiration time in settings</p>
@@ -139,7 +141,7 @@ function SessionLayout() {
           />
         </Paper>
       </Box>
-    </Box>
+    </Paper>
   ) : (
     <div>Loading...</div>
   );

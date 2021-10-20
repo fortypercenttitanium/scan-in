@@ -1,26 +1,23 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components';
+import { Box, Typography } from '@mui/material';
 import { Store } from '../store/Provider';
-
-const StyledNav = styled.nav`
-  display: flex;
-  margin: auto 24px auto auto;
-`;
 
 function Nav() {
   const { userData } = useContext(Store);
   return (
-    <StyledNav>
-      <div className="login">
+    <Box sx={{ display: 'flex', my: 'auto', ml: 'auto', mr: '48px' }}>
+      <Box>
         {userData ? (
-          <h2 className="login-text">Hi, {userData.firstName}</h2>
+          <Typography variant="h4">Hi, {userData.firstName}</Typography>
         ) : (
           <a href="http://localhost:5000/auth/microsoft">
-            <h2 className="login-text">Login</h2>
+            <Typography variant="h2" component="h3">
+              Login
+            </Typography>
           </a>
         )}
-      </div>
-    </StyledNav>
+      </Box>
+    </Box>
   );
 }
 

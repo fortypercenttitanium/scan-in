@@ -14,8 +14,8 @@ function SessionStudentList({ data }) {
       {data.map((studentData) => (
         <p key={studentData.id}>
           {studentData.firstName} {studentData.lastName} - {studentData.status}{' '}
-          {studentData.timeStamp &&
-            new Date(studentData.timeStamp).toLocaleTimeString()}
+          {studentData.signInTime &&
+            new Date(Number(studentData.signInTime)).toLocaleTimeString()}
         </p>
       ))}
     </Box>
