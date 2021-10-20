@@ -25,6 +25,7 @@ module.exports = class Session {
           addSession(classID: $classID) {
             id
             classID
+            className
             startTime
             endTime
             log {
