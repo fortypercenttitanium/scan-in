@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { SocketStore } from '../../store/SocketProvider';
+import grey from '@mui/material/colors/grey';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -75,6 +76,7 @@ function SessionLayout() {
         display: 'flex',
         flexDirection: 'column',
         height: '800px',
+        backgroundColor: grey[200],
       }}
     >
       <Box
@@ -107,7 +109,14 @@ function SessionLayout() {
             width: '100%',
           }}
         >
-          <Box>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              p: 2,
+            }}
+          >
             <p>
               Present:{' '}
               {
@@ -124,12 +133,12 @@ function SessionLayout() {
             </p>
           </Box>
           <Box sx={{ textAlign: 'center' }}>
-            <h3>Sign-in deadline: 10:30am</h3>
+            {/* <h3>Sign-in deadline: 10:30am</h3> */}
           </Box>
           <SessionStudentList data={bySignIn(studentStatus, 'present')} />
           <Box sx={{ textAlign: 'center' }}>
-            <p>Sign in expires: 12:30pm</p>
-            <p>Change expiration time in settings</p>
+            {/* <p>Sign in expires: 12:30pm</p>
+            <p>Change expiration time in settings</p> */}
           </Box>
           <Box sx={{ my: 1, mx: 'auto' }}>
             <Stack direction="row" spacing={3}>

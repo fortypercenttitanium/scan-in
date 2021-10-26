@@ -1,24 +1,51 @@
 import React from 'react';
-import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 
 function SessionStudentList({ data }) {
   return (
-    <Box
+    <TableContainer
+      component={Paper}
       sx={{
         gridColumnEnd: 'span 2',
-        border: '1px solid blue',
+        p: 2,
         m: 1,
         overflow: 'auto',
       }}
     >
-      {data.map((studentData) => (
-        <p key={studentData.id}>
-          {studentData.firstName} {studentData.lastName} - {studentData.status}{' '}
-          {studentData.signInTime &&
-            new Date(Number(studentData.signInTime)).toLocaleTimeString()}
-        </p>
-      ))}
-    </Box>
+      <Table size="small">
+        <TableHead>
+          <TableRow
+            sx={{
+              '& .MuiTableCell-head': { fontWeight: 'bold', fontSize: 'large' },
+            }}
+          >
+            <TableCell>Student</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell>Sign-in time</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data.map((studentData) => (
+            <TableRow key={studentData.id}>
+              <TableCell>
+                {studentData.firstName} {studentData.lastName}
+              </TableCell>
+              <TableCell>{studentData.status}</TableCell>
+              <TableCell>
+                {studentData.signInTime &&
+                  new Date(Number(studentData.signInTime)).toLocaleTimeString()}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
