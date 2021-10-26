@@ -79,6 +79,7 @@ function SocketProvider({ children }) {
       }
 
       if (event === 'scan-fail') {
+        console.log(`Scan failed: ${payload.message}`);
         setLastUpdate(`Scan failed: ${payload.message}`);
       }
     };
