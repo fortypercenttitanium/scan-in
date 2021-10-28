@@ -14,6 +14,7 @@ let classesRef;
 let usersRef;
 let studentsRef;
 let downloadsRef;
+let sessionsRef;
 
 async function createRefs() {
   classesRef = await db.collection('classes');
@@ -93,6 +94,18 @@ const resolvers = {
 
         const result = snapshot.docs.map((doc) => doc.data()) || null;
         return result;
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
+    async sessionList(_, args) {
+      try {
+        const { userID } = args;
+
+        const snapshot = await sessionsRef.where('owner', '==', userID).get();
+
+        const result = snapshot.docs.map((doc) => doc.data()) || null;
+        return result.sort((session) => Number(session.startTime));
       } catch (err) {
         throw new ApolloError(err);
       }

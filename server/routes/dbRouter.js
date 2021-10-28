@@ -31,6 +31,32 @@ router.get('/classes', async (req, res, next) => {
   }
 });
 
+router.get('/sessions', async (req, res, next) => {
+  try {
+    const SESSION_LIST = gql`
+      query ($userID: ID!) {
+        sessionList(userID: $userID) {
+          id
+          className
+          startTime
+          endTime
+          log {
+            event
+            payload
+            timeStamp
+          }
+        }
+      }
+    `;
+
+    const result = await query(SESSION_LIST, { userID: req.user.id });
+
+    res.json(result.sessionList);
+  } catch (err) {
+    return next(err);
+  }
+});
+
 router.post('/studentIDs', async (req, res, next) => {
   try {
     const { students } = req.body;
