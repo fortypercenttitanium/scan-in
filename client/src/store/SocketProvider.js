@@ -3,6 +3,8 @@ import getLogTime from '../helperFunctions/getLogTime';
 export const SocketStore = createContext();
 let socket;
 
+const noop = () => {};
+
 function SocketProvider({ children }) {
   const [sessionData, setSessionData] = useState(null);
   const [lastUpdate, setLastUpdate] = useState('');
@@ -34,7 +36,7 @@ function SocketProvider({ children }) {
     }
   }, [sessionData]);
 
-  function init(classID) {
+  function init(classID, onCloseCallback) {
     console.log(`Initializing class session: ${classID}`);
     socket = new WebSocket('ws://localhost:5001');
 
@@ -84,6 +86,8 @@ function SocketProvider({ children }) {
       }
     };
 
+    socket.onclose = onCloseCallback || noop;
+
     if (process.env.NODE_ENV === 'development') {
       window.socket = socket;
     }
@@ -98,9 +102,25 @@ function SocketProvider({ children }) {
     socket.send(JSON.stringify(message));
   }
 
+  function closeSession() {
+    socket.send(
+      JSON.stringify({
+        event: 'close-session',
+        payload: { sessionID: sessionData.id },
+      }),
+    );
+  }
+
   return (
     <SocketStore.Provider
-      value={{ init, sessionData, scanIn, lastUpdate, studentStatus }}
+      value={{
+        init,
+        sessionData,
+        scanIn,
+        lastUpdate,
+        studentStatus,
+        closeSession,
+      }}
     >
       {children}
     </SocketStore.Provider>

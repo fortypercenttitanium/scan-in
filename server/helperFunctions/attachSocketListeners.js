@@ -29,6 +29,10 @@ module.exports = function attachSocketListeners(socket) {
     }
   }
 
+  async function closeSession({ sessionID }) {
+    await sessionList.closeSession(sessionID);
+  }
+
   socket.on('message', (message) => {
     logMessage(socket, message);
     try {
@@ -55,6 +59,9 @@ module.exports = function attachSocketListeners(socket) {
           break;
         case 'scan-in':
           handleScanIn(payload);
+          break;
+        case 'close-session':
+          closeSession(payload);
           break;
         default:
           break;

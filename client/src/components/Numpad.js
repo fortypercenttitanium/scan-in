@@ -178,7 +178,12 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
         >
           Clear
         </Button>
-        <Item data-type="fullscreen" size="large" variant="contained">
+        <Item
+          data-type="fullscreen"
+          size="large"
+          variant="contained"
+          onClick={toggleFullscreen}
+        >
           {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
         </Item>
       </Stack>

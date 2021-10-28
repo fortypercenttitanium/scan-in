@@ -6,8 +6,20 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { green, grey } from '@mui/material/colors';
 
 function SessionStudentList({ data }) {
+  function statusBackgroundColor(status) {
+    switch (status) {
+      case 'present':
+        return green[100];
+      case 'absent':
+        return grey[200];
+      default:
+        return 'inherit';
+    }
+  }
+
   return (
     <TableContainer
       component={Paper}
@@ -15,7 +27,6 @@ function SessionStudentList({ data }) {
         gridColumnEnd: 'span 2',
         p: 2,
         m: 1,
-        overflow: 'auto',
       }}
     >
       <Table size="small">
@@ -32,7 +43,12 @@ function SessionStudentList({ data }) {
         </TableHead>
         <TableBody>
           {data.map((studentData) => (
-            <TableRow key={studentData.id}>
+            <TableRow
+              key={studentData.id}
+              sx={{
+                backgroundColor: statusBackgroundColor(studentData.status),
+              }}
+            >
               <TableCell>
                 {studentData.firstName} {studentData.lastName}
               </TableCell>
