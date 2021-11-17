@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import grey from '@mui/material/colors/grey';
 
-function SessionList() {
+function SessionList({ onSessionClick: handleSessionClick }) {
   const [sessions, setSessions] = useState([]);
   const [dataIsStale, setDataIsStale] = useState(true);
 
@@ -58,6 +58,7 @@ function SessionList() {
           }}
           component="button"
           key={session.id}
+          onClick={() => handleSessionClick(session.id)}
         >
           <h1>{session.className}</h1>
           <h2>{new Date(Number(session.startTime)).toLocaleDateString()}</h2>

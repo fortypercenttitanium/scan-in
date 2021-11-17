@@ -10,7 +10,7 @@ const typeDefs = gql`
     student(id: ID!): Student
     studentsByID(ids: [ID]!): [Student]!
     studentList(classID: ID): [Student]!
-    session(id: ID!): Session
+    session(id: ID!, userID: ID!): Session
     sessionList(userID: ID!): [Session]!
     download(token: ID!): Download
   }

@@ -148,6 +148,20 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
+    async session(_, args) {
+      try {
+        const { id, userID } = args;
+
+        const snapshot = await sessionsRef
+          .where('owner', '==', userID)
+          .where('id', '==', id)
+          .get();
+
+        return snapshot.docs[0].data();
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
   },
   Mutation: {
     async addUser(parent, args) {

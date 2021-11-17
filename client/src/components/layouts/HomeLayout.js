@@ -11,6 +11,8 @@ import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
+import Modal from '@mui/material/Modal';
+import Typography from '@mui/material/Typography';
 import ClassList from '../ClassList';
 import SessionList from '../SessionList';
 
@@ -27,8 +29,12 @@ export default function HomeLayout() {
     setValue(newValue);
   };
 
-  function handleSubmit(id) {
+  function handleStartSession(id) {
     history.push(`/session/${id}`);
+  }
+
+  function handleSessionRecap(id) {
+    history.push(`/sessionrecap/${id}`);
   }
 
   return (
@@ -66,10 +72,10 @@ export default function HomeLayout() {
         >
           <Switch>
             <Route exact path={path}>
-              <ClassList onSubmit={handleSubmit} />
+              <ClassList onSubmit={handleStartSession} />
             </Route>
             <Route path={`${path}/sessions`}>
-              <SessionList />
+              <SessionList onSessionClick={handleSessionRecap} />
             </Route>
             <Route path={`${path}/help`}>Help</Route>
           </Switch>

@@ -11,6 +11,7 @@ import { grey } from '@mui/material/colors';
 import Header from './components/Header';
 import HomeLayout from './components/layouts/HomeLayout';
 import SessionLayout from './components/layouts/SessionLayout';
+import ClosedSessionLayout from './components/layouts/ClosedSessionLayout';
 import SocketProvider from './store/SocketProvider';
 import Footer from './components/Footer';
 import { Store } from './store/Provider';
@@ -60,6 +61,9 @@ function App() {
                 <SocketProvider>
                   <SessionLayout />
                 </SocketProvider>
+              </Route>
+              <Route path="/sessionrecap/:id">
+                <ClosedSessionLayout />
               </Route>
             </Switch>
           </Router>

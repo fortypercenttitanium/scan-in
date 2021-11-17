@@ -344,40 +344,77 @@ router.delete('/class', async (req, res, next) => {
   }
 });
 
-router.post('/barcodes', async (req, res, next) => {
+router.get('/session/:id', async (req, res, next) => {
   try {
-    // TODO: use IDs to get all student info, send to barcodes for custom text
-    // Modify class mutation to take student first and last names, assign ID, and create new student
-
-    const ids = req.body.ids;
-
-    const GET_STUDENTS_BY_ID = gql`
-      query GetStudents($ids: [String]!) {
-        getStudentsByID(ids: $ids) {
+    const SESSION = gql`
+      query ($id: ID!, $userID: ID!) {
+        session(id: $id, userID: $userID) {
           id
-          firstName
-          lastName
+          className
+          students {
+            id
+            firstName
+            lastName
+          }
+          owner
+          log {
+            timeStamp
+            event
+            payload
+          }
+          startTime
+          endTime
         }
       }
     `;
 
-    const ADD_DOWNLOAD = gql`
-      mutation AddDownload($data: [String]!) {
-        addDownload(data: $data) {
-          data
-          token
-          expires
-        }
-      }
-    `;
+    const result = await query(SESSION, {
+      id: req.params.id,
+      userID: req.user.id,
+    });
 
-    const result = await query(ADD_DOWNLOAD, { data: ids });
+    console.log(result);
 
-    res.json(result.addDownload.token);
+    res.json(result.session);
   } catch (err) {
     return next(err);
   }
 });
+
+// router.post('/barcodes', async (req, res, next) => {
+//   try {
+//     // TODO: use IDs to get all student info, send to barcodes for custom text
+//     // Modify class mutation to take student first and last names, assign ID, and create new student
+
+//     const ids = req.body.ids;
+
+//     const GET_STUDENTS_BY_ID = gql`
+//       query GetStudents($ids: [String]!) {
+//         getStudentsByID(ids: $ids) {
+//           id
+//           firstName
+//           lastName
+//         }
+//       }
+//     `;
+
+//     const ADD_DOWNLOAD = gql`
+//       mutation AddDownload($data: [String]!) {
+//         addDownload(data: $data) {
+//           data
+//           token
+//           expires
+//         }
+//       }
+//     `;
+
+//     const result = await query(ADD_DOWNLOAD, { data: ids });
+
+//     res.json(result.addDownload.token);
+//   } catch (err) {
+//     return next(err);
+//   }
+// });
 
 router.post('/session', (req, res, next) => {});
 
