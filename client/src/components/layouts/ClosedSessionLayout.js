@@ -13,10 +13,11 @@ import Numpad from '../Numpad';
 import SessionStudentList from '../SessionStudentList';
 import bySignIn from '../../helperFunctions/listSorters/bySignIn';
 import byName from '../../helperFunctions/listSorters/byName';
+import convertLogToStudentStatus from '../../helperFunctions/convertLogToStudentStatus';
 
 function ClosedSessionLayout() {
   const [sessionData, setSessionData] = useState({});
-  console.log(sessionData);
+  const [studentData, setStudentData] = useState([]);
 
   const { id } = useParams();
 
@@ -28,6 +29,7 @@ function ClosedSessionLayout() {
       });
       const data = await request.json();
       setSessionData(data);
+      setStudentData(bySignIn(convertLogToStudentStatus(data)));
     }
 
     getSessionData();
@@ -58,10 +60,9 @@ function ClosedSessionLayout() {
           mx: 3,
         }}
       >
-        <Box sx={{ display: 'block', textAlign: 'center' }}>
-          {/* <h1>{sessionData.className}</h1>
-          <h2>{new Date().toLocaleDateString()}</h2>
-          <h3>{sessionData.startTime}</h3> */}
+        <Box sx={{ display: 'block', textAlign: 'center', m: 'auto' }}>
+          <h1>{sessionData.className}</h1>
+          <h3>{new Date(Number(sessionData.startTime)).toString()}</h3>
         </Box>
       </Box>
       <Box sx={{ display: 'flex', gap: '4px', maxHeight: '80%' }}>
@@ -80,27 +81,25 @@ function ClosedSessionLayout() {
               p: 2,
             }}
           >
-            {/* <p>
+            <p>
               Present:{' '}
               {
-                studentStatus.filter((student) => student.status === 'present')
+                studentData.filter((student) => student.status === 'present')
                   .length
               }
             </p>
             <p>
               Absent:{' '}
               {
-                studentStatus.filter((student) => student.status === 'absent')
+                studentData.filter((student) => student.status === 'absent')
                   .length
               }
-            </p> */}
+            </p>
           </Box>
           <Box sx={{ textAlign: 'center' }}>
             {/* <h3>Sign-in deadline: 10:30am</h3> */}
           </Box>
-          {/* <SessionStudentList
-            data={bySignIn(byName(studentStatus, 'last'), 'present')}
-          /> */}
+          <SessionStudentList data={studentData} />
           <Box sx={{ textAlign: 'center' }}>
             {/* <p>Sign in expires: 12:30pm</p>
             <p>Change expiration time in settings</p> */}

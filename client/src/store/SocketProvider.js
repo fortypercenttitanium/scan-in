@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import getLogTime from '../helperFunctions/getLogTime';
+import convertLogToStudentStatus from '../helperFunctions/convertLogToStudentStatus';
 export const SocketStore = createContext();
 let socket;
 
@@ -13,24 +14,7 @@ function SocketProvider({ children }) {
   // Create useable student data
   useEffect(() => {
     if (sessionData && sessionData.students?.length) {
-      const students = sessionData.students.map((student) => {
-        let status = 'absent';
-        let signInTime = null;
-
-        const signInData = sessionData.log.filter(
-          (log) => log.event === 'scan-in' && log.payload === student.id,
-        );
-        if (signInData.length) {
-          status = 'present';
-          signInTime = signInData[0].timeStamp;
-        }
-
-        return {
-          ...student,
-          status,
-          signInTime,
-        };
-      });
+      const students = convertLogToStudentStatus(sessionData);
 
       setStudentStatus(students);
     }
