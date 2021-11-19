@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
-import ClassList from '../ClassList';
+import ClassList from '../ClassList/ClassList';
 import SessionList from '../SessionRecap/SessionList';
 
 function LinkTab(props) {

@@ -8,8 +8,8 @@ import {
   CircularProgress,
   Stack,
 } from '@mui/material';
-import parseStudentData from '../helperFunctions/parseStudentData';
-import formatStudentList from '../helperFunctions/formatStudentList';
+import parseStudentData from '../../helperFunctions/parseStudentData';
+import formatStudentList from '../../helperFunctions/formatStudentList';
 
 function EditClass({ setDialogOpen, selectedClass, setDataIsStale }) {
   const [className, setClassName] = useState(selectedClass.name || '');

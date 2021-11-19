@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import AddClass from './AddClass';
 import EditClass from './EditClass';
-import Loading from './loading/Loading';
+import Loading from '../Loading/Loading';
 
 function ClassList({ onSubmit: startSession }) {
   const [classes, setClasses] = useState([]);

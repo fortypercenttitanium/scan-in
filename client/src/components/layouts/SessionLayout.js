@@ -9,9 +9,9 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import Numpad from '../Numpad';
-import SessionStudentList from '../SessionStudentList';
-import Loading from '../loading/Loading';
+import Numpad from '../SessionTools/Numpad';
+import SessionStudentList from '../SessionTools/SessionStudentList';
+import Loading from '../Loading/Loading';
 import bySignIn from '../../helperFunctions/listSorters/bySignIn';
 import byName from '../../helperFunctions/listSorters/byName';
 

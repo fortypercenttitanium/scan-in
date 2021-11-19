@@ -8,12 +8,12 @@ import {
 import './App.css';
 import { Box, Paper, CssBaseline, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import Header from './components/Header';
+import Header from './components/Header/Header';
 import HomeLayout from './components/layouts/HomeLayout';
 import SessionLayout from './components/layouts/SessionLayout';
 import ClosedSessionLayout from './components/layouts/ClosedSessionLayout';
 import SocketProvider from './store/SocketProvider';
-import Footer from './components/Footer';
+import Footer from './components/Footer/Footer';
 import { Store } from './store/Provider';
 
 function WelcomeScreen() {

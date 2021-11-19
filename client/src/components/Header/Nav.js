@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Box, Typography } from '@mui/material';
-import { Store } from '../store/Provider';
+import { Store } from '../../store/Provider';
 
 function Nav() {
   const { userData } = useContext(Store);

@@ -3,7 +3,7 @@ import Quagga from 'quagga';
 import styled from 'styled-components';
 import QrReader from 'react-qr-barcode-scanner';
 import beep from '../effects/beep.wav';
-import { SocketStore } from '../store/SocketProvider';
+import { SocketStore } from '../../store/SocketProvider';
 
 const StyledScanner = styled.div`
   display: flex;

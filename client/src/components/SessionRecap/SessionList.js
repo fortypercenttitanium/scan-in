@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import SessionsTable from './SessionsTable';
-import Loading from '../loading/Loading';
+import Loading from '../Loading/Loading';
 
 function SessionList({ onSessionClick: handleSessionClick }) {
   const [sessions, setSessions] = useState([]);
