@@ -5,15 +5,17 @@ import Nav from './Nav';
 function Header() {
   return (
     <Box sx={{ display: 'flex' }}>
-      <Typography
-        variant="h1"
-        fontSize="4rem"
-        fontFamily="StarJedi"
-        ml={4}
-        color="#222"
-      >
-        Scan-in
-      </Typography>
+      <a href="/">
+        <Typography
+          variant="h1"
+          fontSize="4rem"
+          fontFamily="StarJedi"
+          ml={4}
+          color="#222"
+        >
+          Scan-in
+        </Typography>
+      </a>
       <Nav />
     </Box>
   );

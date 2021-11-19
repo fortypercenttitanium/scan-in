@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import AddClass from './AddClass';
 import EditClass from './EditClass';
+import Loading from './loading/Loading';
 
 function ClassList({ onSubmit: startSession }) {
   const [classes, setClasses] = useState([]);
@@ -98,11 +99,15 @@ function ClassList({ onSubmit: startSession }) {
             onChange={handleClickSelect}
             required
           >
-            {classes.map((classObj) => (
-              <MenuItem key={classObj.id} value={classObj.id}>
-                {classObj.name}
-              </MenuItem>
-            ))}
+            {dataIsStale ? (
+              <Loading />
+            ) : (
+              classes.map((classObj) => (
+                <MenuItem key={classObj.id} value={classObj.id}>
+                  {classObj.name}
+                </MenuItem>
+              ))
+            )}
           </Select>
           <Stack
             direction="row"

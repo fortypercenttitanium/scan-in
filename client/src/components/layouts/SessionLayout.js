@@ -8,10 +8,10 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Numpad from '../Numpad';
 import SessionStudentList from '../SessionStudentList';
+import Loading from '../loading/Loading';
 import bySignIn from '../../helperFunctions/listSorters/bySignIn';
 import byName from '../../helperFunctions/listSorters/byName';
 
@@ -213,7 +213,7 @@ function SessionLayout() {
       </Box>
     </Box>
   ) : (
-    <div>Loading...</div>
+    <Loading />
   );
 }
 

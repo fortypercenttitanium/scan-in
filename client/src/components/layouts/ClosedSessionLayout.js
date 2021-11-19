@@ -7,13 +7,14 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import SessionStudentList from '../SessionStudentList';
+import Loading from '../loading/Loading';
 import bySignIn from '../../helperFunctions/listSorters/bySignIn';
-import byName from '../../helperFunctions/listSorters/byName';
+// import byName from '../../helperFunctions/listSorters/byName';
 import convertLogToStudentStatus from '../../helperFunctions/convertLogToStudentStatus';
 import studentStatusToCsv from '../../helperFunctions/studentStatusToCsv';
 
 function ClosedSessionLayout() {
-  const [sessionData, setSessionData] = useState({});
+  const [sessionData, setSessionData] = useState();
   const [studentData, setStudentData] = useState([]);
   const [downloadToken, setDownloadToken] = useState('');
 
@@ -75,75 +76,87 @@ function ClosedSessionLayout() {
         backgroundColor: grey[200],
       }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          maxHeight: '20%',
-          alignItems: 'center',
-          mx: 3,
-        }}
-      >
-        <Box sx={{ display: 'block', textAlign: 'center', m: 'auto' }}>
-          <h1>{sessionData.className}</h1>
-          <h3>{new Date(Number(sessionData.startTime)).toString()}</h3>
-        </Box>
-      </Box>
-      <Box sx={{ display: 'flex', gap: '4px', maxHeight: '80%' }}>
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplate: '1fr 8fr 1fr / 3fr 4fr',
-            mx: 3,
-            width: '100%',
-          }}
-        >
+      {sessionData ? (
+        <>
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
-              p: 2,
+              maxHeight: '20%',
+              alignItems: 'center',
+              mx: 3,
             }}
           >
-            <Typography variant="p" sx={{ color: green[800] }}>
-              Present:{' '}
-              {
-                studentData.filter((student) => student.status === 'present')
-                  .length
-              }
-            </Typography>
-            <Typography variant="p" sx={{ color: red[800] }}>
-              Absent:{' '}
-              {
-                studentData.filter((student) => student.status === 'absent')
-                  .length
-              }
-            </Typography>
+            <Box sx={{ display: 'block', textAlign: 'center', m: 'auto' }}>
+              <h1>{sessionData.className}</h1>
+              <h3>{new Date(Number(sessionData.startTime)).toString()}</h3>
+            </Box>
           </Box>
-          <Box sx={{ textAlign: 'center' }}>
-            {/* <h3>Sign-in deadline: 10:30am</h3> */}
-          </Box>
-          <SessionStudentList data={studentData} />
-          <Box sx={{ textAlign: 'center' }}>
-            {/* <p>Sign in expires: 12:30pm</p>
-            <p>Change expiration time in settings</p> */}
-          </Box>
-          <Box
-            sx={{ my: 1, mx: 'auto', display: 'flex', flexDirection: 'column' }}
-          >
-            <Button variant="contained" onClick={requestDownloadLink}>
-              Export to csv
-            </Button>
-            <a
-              style={{ margin: '8px auto' }}
-              href={`${API_ENDPOINT}/${downloadToken}`}
-              download="session_recap.csv"
+          <Box sx={{ display: 'flex', gap: '4px', maxHeight: '80%' }}>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplate: '1fr 8fr 1fr / 3fr 4fr',
+                mx: 3,
+                width: '100%',
+              }}
             >
-              {downloadToken && 'Download'}
-            </a>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  p: 2,
+                }}
+              >
+                <Typography variant="p" sx={{ color: green[800] }}>
+                  Present:{' '}
+                  {
+                    studentData.filter(
+                      (student) => student.status === 'present',
+                    ).length
+                  }
+                </Typography>
+                <Typography variant="p" sx={{ color: red[800] }}>
+                  Absent:{' '}
+                  {
+                    studentData.filter((student) => student.status === 'absent')
+                      .length
+                  }
+                </Typography>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                {/* <h3>Sign-in deadline: 10:30am</h3> */}
+              </Box>
+              <SessionStudentList data={studentData} />
+              <Box sx={{ textAlign: 'center' }}>
+                {/* <p>Sign in expires: 12:30pm</p>
+            <p>Change expiration time in settings</p> */}
+              </Box>
+              <Box
+                sx={{
+                  my: 1,
+                  mx: 'auto',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <Button variant="contained" onClick={requestDownloadLink}>
+                  Export to csv
+                </Button>
+                <a
+                  style={{ margin: '8px auto' }}
+                  href={`${API_ENDPOINT}/${downloadToken}`}
+                  download="session_recap.csv"
+                >
+                  {downloadToken && 'Download'}
+                </a>
+              </Box>
+            </Box>
           </Box>
-        </Box>
-      </Box>
+        </>
+      ) : (
+        <Loading />
+      )}
     </Box>
   );
 }

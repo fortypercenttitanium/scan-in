@@ -11,8 +11,6 @@ import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
-import Modal from '@mui/material/Modal';
-import Typography from '@mui/material/Typography';
 import ClassList from '../ClassList';
 import SessionList from '../SessionRecap/SessionList';
 
