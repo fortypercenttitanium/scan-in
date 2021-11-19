@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import grey from '@mui/material/colors/grey';
+import SessionsTable from './SessionsTable';
+import Loading from '../loading/Loading';
 
 function SessionList({ onSessionClick: handleSessionClick }) {
   const [sessions, setSessions] = useState([]);
@@ -29,7 +29,6 @@ function SessionList({ onSessionClick: handleSessionClick }) {
   }, [setSessions, dataIsStale]);
 
   return (
-    // TODO change to table
     <Box
       sx={{
         display: 'grid',
@@ -41,30 +40,14 @@ function SessionList({ onSessionClick: handleSessionClick }) {
         overflow: 'auto',
       }}
     >
-      {sessions.map((session) => (
-        <Paper
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            textAlign: 'center',
-            background: grey[300],
-            border: 'none',
-            cursor: 'pointer',
-            '&:hover': {
-              background: grey[200],
-            },
-          }}
-          component="button"
-          key={session.id}
-          onClick={() => handleSessionClick(session.id)}
-        >
-          <h1>{session.className}</h1>
-          <h2>{new Date(Number(session.startTime)).toLocaleDateString()}</h2>
-          <h3>{new Date(Number(session.startTime)).toLocaleTimeString()}</h3>
-        </Paper>
-      ))}
+      {dataIsStale ? (
+        <Loading />
+      ) : (
+        <SessionsTable
+          handleSessionClick={handleSessionClick}
+          sessionsData={sessions}
+        />
+      )}
     </Box>
   );
 }

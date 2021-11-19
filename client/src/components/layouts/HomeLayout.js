@@ -14,7 +14,7 @@ import Paper from '@mui/material/Paper';
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import ClassList from '../ClassList';
-import SessionList from '../SessionList';
+import SessionList from '../SessionRecap/SessionList';
 
 function LinkTab(props) {
   return <Tab sx={{ mx: 4 }} component={Link} {...props} />;
