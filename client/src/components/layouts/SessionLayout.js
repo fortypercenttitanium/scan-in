@@ -16,12 +16,18 @@ import bySignIn from '../../helperFunctions/listSorters/bySignIn';
 import byName from '../../helperFunctions/listSorters/byName';
 
 function SessionLayout() {
-  const [sessionOpened, setSessionOpened] = useState(false);
+  const [sessionStatus, setSessionStatus] = useState('uninitialized');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [clock, setClock] = useState(new Date().toLocaleTimeString());
   const { id } = useParams();
-  const { init, lastUpdate, studentStatus, sessionData, closeSession } =
-    useContext(SocketStore);
+  const {
+    init,
+    lastUpdate,
+    studentStatus,
+    sessionData,
+    closeSession,
+    setOnCloseCallback,
+  } = useContext(SocketStore);
 
   const history = useHistory();
 
@@ -45,28 +51,40 @@ function SessionLayout() {
   }, []);
 
   useEffect(() => {
-    function onCloseCallback() {
-      history.push('/dashboard');
-    }
-    if (!sessionOpened) {
-      init(id, onCloseCallback);
-    }
-  }, [init, id, sessionOpened, history]);
+    return () => setSessionStatus('closed');
+  }, []);
 
   useEffect(() => {
-    if (sessionData) {
-      setSessionOpened(true);
+    if (sessionStatus === 'uninitialized') {
+      init(id);
+      setSessionStatus('initialized');
     }
-  }, [sessionData]);
+  }, [init, id, sessionStatus]);
 
   useEffect(() => {
-    document.addEventListener('fullscreenchange', () => {
+    if (sessionData && sessionStatus === 'initialized') {
+      function onCloseCallback() {
+        history.push(`/sessionrecap/${sessionData.id}`);
+      }
+
+      setOnCloseCallback(onCloseCallback);
+      setSessionStatus('connected');
+    }
+  }, [sessionStatus, sessionData, history, setOnCloseCallback]);
+
+  useEffect(() => {
+    function toggleFullscreenState() {
       if (document.fullscreenElement) {
         setIsFullscreen(true);
       } else {
         setIsFullscreen(false);
       }
-    });
+    }
+    document.addEventListener('fullscreenchange', toggleFullscreenState);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', toggleFullscreenState);
+    };
   }, []);
 
   function toggleFullscreen() {
@@ -77,7 +95,7 @@ function SessionLayout() {
     return element.requestFullscreen();
   }
 
-  return sessionOpened ? (
+  return sessionStatus === 'connected' ? (
     <Box
       sx={{
         mx: 0,
@@ -154,12 +172,9 @@ function SessionLayout() {
             <p>Change expiration time in settings</p> */}
           </Box>
           <Box sx={{ my: 1, mx: 'auto' }}>
-            <Stack direction="row" spacing={3}>
-              <Button variant="contained" onClick={closeSession}>
-                Close attendance session
-              </Button>
-              <Button variant="contained">Export to csv</Button>
-            </Stack>
+            <Button variant="contained" onClick={closeSession}>
+              Close attendance session
+            </Button>
           </Box>
         </Box>
         <Paper

@@ -110,7 +110,7 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
-    async download(_, args) {
+    async csvDownload(_, args) {
       try {
         const { token } = args;
 
@@ -303,7 +303,7 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
-    async addDownload(_, args) {
+    async csvDownload(_, args) {
       try {
         const { data } = args;
         const token = nanoid();

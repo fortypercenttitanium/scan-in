@@ -373,9 +373,29 @@ router.get('/session/:id', async (req, res, next) => {
       userID: req.user.id,
     });
 
-    console.log(result);
-
     res.json(result.session);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.post('/sessionDownload', async (req, res, next) => {
+  try {
+    const { data } = req.body;
+
+    const CSV_DOWNLOAD = gql`
+      mutation ($data: String!) {
+        csvDownload(data: $data) {
+          data
+          token
+          expires
+        }
+      }
+    `;
+
+    const result = await query(CSV_DOWNLOAD, { data });
+
+    res.json(result.csvDownload.token);
   } catch (err) {
     return next(err);
   }

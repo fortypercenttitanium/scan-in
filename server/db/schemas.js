@@ -12,7 +12,7 @@ const typeDefs = gql`
     studentList(classID: ID): [Student]!
     session(id: ID!, userID: ID!): Session
     sessionList(userID: ID!): [Session]!
-    download(token: ID!): Download
+    csvDownload(token: ID!): CsvDownload
   }
 
   type Mutation {
@@ -34,7 +34,7 @@ const typeDefs = gql`
     addSession(classID: ID!): Session
     editSession(teacherID: ID!, sessionID: ID!, endTime: String): Session
     deleteSession(id: ID!): [Session]!
-    addDownload(data: [String]!): Download
+    csvDownload(data: String!): CsvDownload
     clearDownloads: [ID]!
   }
 
@@ -85,10 +85,10 @@ const typeDefs = gql`
     payload: String
   }
 
-  type Download {
+  type CsvDownload {
     expires: String!
     token: ID!
-    data: [String!]
+    data: String
   }
 `;
 

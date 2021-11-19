@@ -4,8 +4,6 @@ import convertLogToStudentStatus from '../helperFunctions/convertLogToStudentSta
 export const SocketStore = createContext();
 let socket;
 
-const noop = () => {};
-
 function SocketProvider({ children }) {
   const [sessionData, setSessionData] = useState(null);
   const [lastUpdate, setLastUpdate] = useState('');
@@ -20,7 +18,7 @@ function SocketProvider({ children }) {
     }
   }, [sessionData]);
 
-  function init(classID, onCloseCallback) {
+  function init(classID) {
     console.log(`Initializing class session: ${classID}`);
     socket = new WebSocket('ws://localhost:5001');
 
@@ -70,11 +68,13 @@ function SocketProvider({ children }) {
       }
     };
 
-    socket.onclose = onCloseCallback || noop;
-
     if (process.env.NODE_ENV === 'development') {
       window.socket = socket;
     }
+  }
+
+  function setOnCloseCallback(cb) {
+    socket.onclose = cb;
   }
 
   function scanIn(studentID) {
@@ -104,6 +104,7 @@ function SocketProvider({ children }) {
         lastUpdate,
         studentStatus,
         closeSession,
+        setOnCloseCallback,
       }}
     >
       {children}

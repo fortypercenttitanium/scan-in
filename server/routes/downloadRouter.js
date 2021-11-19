@@ -1,11 +1,7 @@
 const router = require('express').Router();
-const fsPromises = require('fs/promises');
-const fs = require('fs');
-const path = require('path');
+const { writeFile, unlink } = require('fs/promises');
 const { gql } = require('graphql-request');
 const query = require('../helperFunctions/queryHelper');
-const idToBarcode = require('../helperFunctions/idToBarcode');
-const zipFiles = require('../helperFunctions/zipFiles');
 
 router.get('/expired', (req, res) => {
   res.send('Download link expired, please try again with a new link.');
@@ -20,8 +16,8 @@ router.get('/:token', async (req, res, next) => {
     const token = req.params.token;
 
     const GET_DOWNLOAD = gql`
-      query Download($token: ID!) {
-        download(token: $token) {
+      query ($token: ID!) {
+        csvDownload(token: $token) {
           data
           expires
         }
@@ -32,43 +28,25 @@ router.get('/:token', async (req, res, next) => {
 
     const now = new Date().getTime();
 
-    if (!result.download) {
+    if (!result.csvDownload) {
       return res.redirect('/download/invalid');
     }
 
-    if (result.download.expires < now) {
+    if (result.csvDownload.expires < now) {
       return res.redirect('/download/expired');
     }
 
-    const ids = result.download.data;
+    const { data } = result.csvDownload;
 
-    const barcodes = idToBarcode(ids).map((barcode, index) => ({
-      name: `${ids[index]}.svg`,
-      data: barcode,
-    }));
+    await writeFile('data.csv', data);
 
-    if (!fs.existsSync(path.join(__dirname, 'temp')))
-      fs.mkdirSync(path.join(__dirname, 'temp'));
-
-    await zipFiles(
-      barcodes,
-      path.join(__dirname, 'temp', `${result.download.token}.zip`),
-    );
-
-    res.download(
-      path.join(__dirname, 'temp', `${result.download.token}.zip`),
-      'barcodes.zip',
-      async () => {
-        try {
-          await fsPromises.rm(path.join(__dirname, 'temp'), {
-            recursive: true,
-          });
-          console.log('Cleanup finished');
-        } catch (err) {
-          console.log(err);
-        }
-      },
-    );
+    res.download('./data.csv', `${token}.csv`, async function (err) {
+      if (err) {
+        console.error(err);
+      } else {
+        await unlink('./data.csv');
+      }
+    });
   } catch (err) {
     return next(err);
   }

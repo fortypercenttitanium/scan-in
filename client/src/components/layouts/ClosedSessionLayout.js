@@ -3,21 +3,24 @@ import { useParams } from 'react-router-dom';
 import grey from '@mui/material/colors/grey';
 import green from '@mui/material/colors/green';
 import red from '@mui/material/colors/red';
-import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import Numpad from '../Numpad';
 import SessionStudentList from '../SessionStudentList';
 import bySignIn from '../../helperFunctions/listSorters/bySignIn';
 import byName from '../../helperFunctions/listSorters/byName';
 import convertLogToStudentStatus from '../../helperFunctions/convertLogToStudentStatus';
+import studentStatusToCsv from '../../helperFunctions/studentStatusToCsv';
 
 function ClosedSessionLayout() {
   const [sessionData, setSessionData] = useState({});
   const [studentData, setStudentData] = useState([]);
+  const [downloadToken, setDownloadToken] = useState('');
+
+  const API_ENDPOINT =
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:5000/download'
+      : '/download';
 
   const { id } = useParams();
 
@@ -35,7 +38,28 @@ function ClosedSessionLayout() {
     getSessionData();
   }, [id]);
 
-  const matches = useMediaQuery('(max-width:768px)');
+  async function requestDownloadLink() {
+    try {
+      const data = studentStatusToCsv(studentData);
+
+      const response = await fetch('/db/sessionDownload', {
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify({ data }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const token = await response.json();
+
+        setDownloadToken(token);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <Box
@@ -68,7 +92,7 @@ function ClosedSessionLayout() {
       <Box sx={{ display: 'flex', gap: '4px', maxHeight: '80%' }}>
         <Box
           sx={{
-            display: matches ? 'none' : 'grid',
+            display: 'grid',
             gridTemplate: '1fr 8fr 1fr / 3fr 4fr',
             mx: 3,
             width: '100%',
@@ -81,20 +105,20 @@ function ClosedSessionLayout() {
               p: 2,
             }}
           >
-            <p>
+            <Typography variant="p" sx={{ color: green[800] }}>
               Present:{' '}
               {
                 studentData.filter((student) => student.status === 'present')
                   .length
               }
-            </p>
-            <p>
+            </Typography>
+            <Typography variant="p" sx={{ color: red[800] }}>
               Absent:{' '}
               {
                 studentData.filter((student) => student.status === 'absent')
                   .length
               }
-            </p>
+            </Typography>
           </Box>
           <Box sx={{ textAlign: 'center' }}>
             {/* <h3>Sign-in deadline: 10:30am</h3> */}
@@ -104,8 +128,19 @@ function ClosedSessionLayout() {
             {/* <p>Sign in expires: 12:30pm</p>
             <p>Change expiration time in settings</p> */}
           </Box>
-          <Box sx={{ my: 1, mx: 'auto' }}>
-            <Button variant="contained">Export to csv</Button>
+          <Box
+            sx={{ my: 1, mx: 'auto', display: 'flex', flexDirection: 'column' }}
+          >
+            <Button variant="contained" onClick={requestDownloadLink}>
+              Export to csv
+            </Button>
+            <a
+              style={{ margin: '8px auto' }}
+              href={`${API_ENDPOINT}/${downloadToken}`}
+              download="session_recap.csv"
+            >
+              {downloadToken && 'Download'}
+            </a>
           </Box>
         </Box>
       </Box>
