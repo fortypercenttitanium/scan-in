@@ -12,6 +12,7 @@ import bySignIn from '../../helperFunctions/listSorters/bySignIn';
 // import byName from '../../helperFunctions/listSorters/byName';
 import convertLogToStudentStatus from '../../helperFunctions/convertLogToStudentStatus';
 import studentStatusToCsv from '../../helperFunctions/studentStatusToCsv';
+import format from 'date-fns/format';
 
 function ClosedSessionLayout() {
   const [sessionData, setSessionData] = useState();
@@ -81,6 +82,8 @@ function ClosedSessionLayout() {
         flexDirection: 'column',
         height: '800px',
         backgroundColor: grey[200],
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
       {sessionData ? (
@@ -96,10 +99,23 @@ function ClosedSessionLayout() {
           >
             <Box sx={{ display: 'block', textAlign: 'center', m: 'auto' }}>
               <h1>{sessionData.className}</h1>
-              <h3>{new Date(Number(sessionData.startTime)).toString()}</h3>
+              <h3>
+                Opened:{' '}
+                {format(new Date(Number(sessionData.startTime)), 'PPpp')}
+              </h3>
+              <h3>
+                Closed : {format(new Date(Number(sessionData.endTime)), 'PPpp')}
+              </h3>
             </Box>
           </Box>
-          <Box sx={{ display: 'flex', gap: '4px', maxHeight: '80%' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: '4px',
+              maxHeight: '80%',
+              width: 'clamp(800px, 80vw, 1200px)',
+            }}
+          >
             <Box
               sx={{
                 display: 'grid',

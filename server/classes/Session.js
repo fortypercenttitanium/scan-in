@@ -52,7 +52,7 @@ module.exports = class Session {
 
         sessionData = result.session;
       } else {
-        NEW_SESSION = gql`
+        const NEW_SESSION = gql`
           mutation ($classID: ID!) {
             addSession(classID: $classID) {
               id
@@ -82,7 +82,6 @@ module.exports = class Session {
       }
 
       this.id = sessionData.id;
-      console.log('id in session class: ', this.id);
       this.#studentList = [...sessionData.students];
 
       const openMessage = new SocketMessage({
@@ -136,7 +135,7 @@ module.exports = class Session {
           sender: 'server',
           message: {
             event: 'session-joined',
-            payload: sessionData,
+            payload: sessionData.session,
           },
         }),
       );

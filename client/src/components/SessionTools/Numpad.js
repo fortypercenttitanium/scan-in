@@ -9,9 +9,9 @@ import FullscreenExit from '@mui/icons-material/FullscreenExit';
 
 const Item = styled(Button)(({ theme }) => ({
   ...theme.typography.body2,
-  height: theme.spacing(7),
+  height: theme.spacing(8),
   fontSize: '1rem',
-  width: theme.spacing(7),
+  width: theme.spacing(9),
   textAlign: 'center',
 }));
 
@@ -76,7 +76,7 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
       variant="outlined"
       sx={{
         margin: '12px auto auto',
-        p: '12px',
+        p: 2,
         backgroundColor: grey[300],
         boxShadow: '4px 4px 4px gray',
       }}
@@ -183,6 +183,7 @@ function Numpad({ isFullscreen, toggleFullscreen }) {
           size="large"
           variant="contained"
           onClick={toggleFullscreen}
+          disabled
         >
           {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
         </Item>

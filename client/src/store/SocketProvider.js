@@ -67,6 +67,15 @@ function SocketProvider({ children }) {
         setLastUpdate(`Scan failed: ${payload.message}`);
       }
 
+      if (event === 'session-joined') {
+        setSessionData({
+          ...sessionData,
+          ...payload,
+        });
+
+        setLastUpdate(`Session joined at ${new Date().toLocaleTimeString()}`);
+      }
+
       if (event === 'session-closed') {
         socket.onCloseCallback();
       }

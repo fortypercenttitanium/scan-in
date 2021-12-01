@@ -132,7 +132,7 @@ function SessionLayout() {
           <h3>{clock}</h3>
         </Box>
         <Link to="#">
-          <Typography variant="p">Settings</Typography>
+          <Typography variant="p">{/* Settings */}</Typography>
         </Link>
       </Box>
       <Box sx={{ display: 'flex', gap: '4px', maxHeight: '80%' }}>
@@ -186,8 +186,9 @@ function SessionLayout() {
           sx={{
             my: 'auto',
             mx: matches ? 'auto' : 6,
-            px: 10,
-            py: 4,
+            px: 6,
+            pt: 2,
+            pb: 4,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
