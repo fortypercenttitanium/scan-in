@@ -18,11 +18,96 @@ module.exports = class Session {
     this.expires = now + 2 * 60 * 60 * 1000;
   }
 
-  async init() {
+  async init(sessionID) {
     try {
-      const NEW_SESSION = gql`
-        mutation ($classID: ID!) {
-          addSession(classID: $classID) {
+      let sessionData;
+
+      // if session already exists
+      if (sessionID) {
+        const SESSION_IN_PROGRESS = gql`
+          query ($id: ID!) {
+            session(id: $id) {
+              id
+              classID
+              className
+              startTime
+              endTime
+              log {
+                event
+                payload
+                timeStamp
+              }
+              students {
+                id
+                firstName
+                lastName
+              }
+            }
+          }
+        `;
+
+        const result = await query(SESSION_IN_PROGRESS, {
+          id: sessionID,
+        });
+
+        sessionData = result.session;
+      } else {
+        NEW_SESSION = gql`
+          mutation ($classID: ID!) {
+            addSession(classID: $classID) {
+              id
+              classID
+              className
+              startTime
+              endTime
+              log {
+                event
+                payload
+                timeStamp
+              }
+              students {
+                id
+                firstName
+                lastName
+              }
+            }
+          }
+        `;
+
+        const result = await query(NEW_SESSION, {
+          classID: this.classID,
+        });
+
+        sessionData = result.addSession;
+      }
+
+      this.id = sessionData.id;
+      console.log('id in session class: ', this.id);
+      this.#studentList = [...sessionData.students];
+
+      const openMessage = new SocketMessage({
+        sender: 'server',
+        message: {
+          event: 'session-opened',
+          payload: sessionData,
+        },
+      });
+
+      this.broadcastMessage(openMessage);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async addSubscriber(socket) {
+    // todo: check if sockets are disconnected when returning to class screen
+    // check if the subscriber is already subscribed
+    if (!this.#sockets.find((listSocket) => listSocket.id === socket.id)) {
+      this.#sockets.push(socket);
+
+      const GET_SESSION_DATA = gql`
+        query ($id: ID!) {
+          session(id: $id) {
             id
             classID
             className
@@ -42,29 +127,20 @@ module.exports = class Session {
         }
       `;
 
-      const { addSession: sessionData } = await query(NEW_SESSION, {
-        classID: this.classID,
+      const sessionData = await query(GET_SESSION_DATA, {
+        id: this.id,
       });
 
-      this.id = sessionData.id;
-      this.#studentList = [...sessionData.students];
-
-      const openMessage = new SocketMessage({
-        sender: 'server',
-        message: {
-          event: 'session-opened',
-          payload: sessionData,
-        },
-      });
-
-      this.broadcastMessage(openMessage);
-    } catch (err) {
-      console.error(err);
+      this.broadcastMessage(
+        new SocketMessage({
+          sender: 'server',
+          message: {
+            event: 'session-joined',
+            payload: sessionData,
+          },
+        }),
+      );
     }
-  }
-
-  addSubscriber(socket) {
-    this.#sockets.push(socket);
   }
 
   removeSubscriber(socket) {

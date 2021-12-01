@@ -57,6 +57,36 @@ router.get('/sessions', async (req, res, next) => {
   }
 });
 
+router.get('/openSessions', async (req, res, next) => {
+  try {
+    const SESSION_LIST = gql`
+      query ($userID: ID!) {
+        sessionList(userID: $userID) {
+          id
+          className
+          startTime
+          endTime
+          classID
+          log {
+            event
+            payload
+            timeStamp
+          }
+        }
+      }
+    `;
+
+    const result = await query(SESSION_LIST, { userID: req.user.id });
+
+    const openSessions = result.sessionList.filter(
+      (session) => Number(session.endTime) > Number(new Date().getTime()),
+    );
+    res.json(openSessions);
+  } catch (err) {
+    return next(err);
+  }
+});
+
 router.post('/studentIDs', async (req, res, next) => {
   try {
     const { students } = req.body;
@@ -374,6 +404,45 @@ router.get('/session/:id', async (req, res, next) => {
     });
 
     res.json(result.session);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get('/sessionrecap/:id', async (req, res, next) => {
+  try {
+    const SESSION = gql`
+      query ($id: ID!, $userID: ID!) {
+        session(id: $id, userID: $userID) {
+          id
+          className
+          students {
+            id
+            firstName
+            lastName
+          }
+          owner
+          log {
+            timeStamp
+            event
+            payload
+          }
+          startTime
+          endTime
+        }
+      }
+    `;
+
+    const result = await query(SESSION, {
+      id: req.params.id,
+      userID: req.user.id,
+    });
+
+    const now = new Date();
+    const sessionIsExpired =
+      Number(result.session.endTime) < Number(now.getTime());
+
+    res.json(sessionIsExpired ? result.session : null);
   } catch (err) {
     return next(err);
   }

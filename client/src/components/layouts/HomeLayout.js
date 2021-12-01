@@ -13,6 +13,7 @@ import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
 import ClassList from '../ClassList/ClassList';
 import SessionList from '../SessionRecap/SessionList';
+import Help from '../Help/Help';
 
 function LinkTab(props) {
   return <Tab sx={{ mx: 4 }} component={Link} {...props} />;
@@ -66,7 +67,6 @@ export default function HomeLayout() {
             position: 'relative',
           }}
           elevation={3}
-          className="fullscreen"
         >
           <Switch>
             <Route exact path={path}>
@@ -75,7 +75,9 @@ export default function HomeLayout() {
             <Route path={`${path}/sessions`}>
               <SessionList onSessionClick={handleSessionRecap} />
             </Route>
-            <Route path={`${path}/help`}>Help</Route>
+            <Route path={`${path}/help`}>
+              <Help />
+            </Route>
           </Switch>
         </Paper>
       </Box>

@@ -11,7 +11,7 @@ import {
 import parseStudentData from '../../helperFunctions/parseStudentData';
 import formatStudentList from '../../helperFunctions/formatStudentList';
 
-function EditClass({ setDialogOpen, selectedClass, setDataIsStale }) {
+function EditClass({ setDialogOpen, selectedClass, hydrateData }) {
   const [className, setClassName] = useState(selectedClass.name || '');
   const [studentData, setStudentData] = useState('');
   const [loading, setLoading] = useState(true);
@@ -129,7 +129,7 @@ function EditClass({ setDialogOpen, selectedClass, setDataIsStale }) {
           setClassName('');
           setStudentData('');
           setMessage('Class edited successfully');
-          setDataIsStale(true);
+          hydrateData('classes');
 
           return setTimeout(() => setDialogOpen(''), 1000);
         }
@@ -194,6 +194,7 @@ function EditClass({ setDialogOpen, selectedClass, setDataIsStale }) {
               sx={{ m: 'auto' }}
               type="button"
               disabled={!studentData || disableButton}
+              title="Format data pasted from OnCourse Class Roster PDF"
             >
               Format list
             </Button>

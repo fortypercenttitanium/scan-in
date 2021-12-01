@@ -12,6 +12,10 @@ function Copyright() {
       <Link color="inherit" href="https://ayweb.dev" target="_blank">
         Alex Younger
       </Link>
+      <br />
+      <Link color="inherit" href="mailto:alex@ayweb.dev" target="_blank">
+        Contact
+      </Link>
     </Typography>
   );
 }

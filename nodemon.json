@@ -1,5 +1,5 @@
 {
   "events": {
-    "restart": "kill $(lsof -ti :5001)"
+    "restart": "./kill_server.sh"
   }
 }

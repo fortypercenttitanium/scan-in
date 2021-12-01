@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import grey from '@mui/material/colors/grey';
 import green from '@mui/material/colors/green';
 import red from '@mui/material/colors/red';
@@ -18,6 +18,8 @@ function ClosedSessionLayout() {
   const [studentData, setStudentData] = useState([]);
   const [downloadToken, setDownloadToken] = useState('');
 
+  const history = useHistory();
+
   const API_ENDPOINT =
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:5000/download'
@@ -27,17 +29,21 @@ function ClosedSessionLayout() {
 
   useEffect(() => {
     async function getSessionData() {
-      const request = await fetch(`/db/session/${id}`, {
+      const request = await fetch(`/db/sessionrecap/${id}`, {
         method: 'GET',
         credentials: 'include',
       });
       const data = await request.json();
-      setSessionData(data);
-      setStudentData(bySignIn(convertLogToStudentStatus(data)));
+      if (data) {
+        setSessionData(data);
+        setStudentData(bySignIn(convertLogToStudentStatus(data)));
+      } else {
+        history.push('/dashboard');
+      }
     }
 
     getSessionData();
-  }, [id]);
+  }, [id, history]);
 
   async function requestDownloadLink() {
     try {

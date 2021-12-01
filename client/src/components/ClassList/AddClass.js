@@ -10,7 +10,7 @@ import {
 import parseStudentData from '../../helperFunctions/parseStudentData';
 import formatStudentList from '../../helperFunctions/formatStudentList';
 
-function AddClass({ setDialogOpen, setDataIsStale }) {
+function AddClass({ setDialogOpen, hydrateData }) {
   const [className, setClassName] = useState('');
   const [studentData, setStudentData] = useState('');
   const [error, setError] = useState('');
@@ -92,7 +92,7 @@ function AddClass({ setDialogOpen, setDataIsStale }) {
           setClassName('');
           setStudentData('');
           setMessage('Class added successfully');
-          setDataIsStale(true);
+          hydrateData('classes');
 
           return setTimeout(() => setDialogOpen(''), 1000);
         }
@@ -154,6 +154,7 @@ function AddClass({ setDialogOpen, setDataIsStale }) {
             sx={{ m: 'auto' }}
             type="button"
             disabled={!studentData || disableButton}
+            title="Format data pasted from OnCourse Class Roster PDF"
           >
             Format list
           </Button>

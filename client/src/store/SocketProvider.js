@@ -20,7 +20,7 @@ function SocketProvider({ children }) {
 
   function init(classID) {
     console.log(`Initializing class session: ${classID}`);
-    socket = new WebSocket('ws://localhost:5001');
+    socket = new WebSocket(`ws://localhost:5001`);
 
     socket.onmessage = (message) => {
       const messageData = JSON.parse(message.data);

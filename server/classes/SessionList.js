@@ -1,4 +1,6 @@
 const Session = require('./Session');
+const { gql } = require('graphql-request');
+const query = require('../helperFunctions/queryHelper');
 
 module.exports = class SessionList {
   constructor() {
@@ -9,19 +11,58 @@ module.exports = class SessionList {
   }
 
   createSession = async (ownerSocket, classID) => {
-    console.log('class ID', classID);
-    const existingSessions = Object.keys(this.sessions).filter(
-      (session) => this.sessions[session].owner === ownerSocket.id,
-    );
-    if (existingSessions.length) {
-      throw new Error(
-        `Owner already has an active session. Close open session ${existingSessions[0].id} before opening a new session.`,
-      );
-    }
+    try {
+      console.log('owner', ownerSocket.owner);
+      console.log('class ID', classID);
+      // check db for open sessions
+      const SESSION_LIST = gql`
+        query ($userID: ID!) {
+          sessionList(userID: $userID) {
+            id
+            className
+            startTime
+            endTime
+            classID
+            log {
+              event
+              payload
+              timeStamp
+            }
+          }
+        }
+      `;
 
-    const session = new Session(ownerSocket, classID);
-    await session.init();
-    this.sessions[session.id] = session;
+      const result = await query(SESSION_LIST, { userID: ownerSocket.owner });
+
+      const openSessions = result.sessionList.filter(
+        (session) => Number(session.endTime) > Number(new Date().getTime()),
+      );
+
+      // if open sessions, check session list for session
+      if (openSessions.length) {
+        const openSession = openSessions[0];
+        console.log('sessions: ', this.sessions);
+        console.log('this one: ', openSession.id);
+        if (this.sessions[openSession.id]) {
+          // if in session list, add subscriber
+          return this.sessions[openSession.id].addSubscriber(ownerSocket);
+        } else {
+          // if not in session list, initialize socket
+          const session = new Session(ownerSocket, classID);
+          await session.init(openSession.id);
+          this.sessions[openSession.id] = session;
+          return;
+        }
+      }
+
+      // if no open sessions, open session regularly
+      const session = new Session(ownerSocket, classID);
+      await session.init();
+      console.log('id in list: ', session.id);
+      this.sessions[session.id] = session;
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   closeSession = (id) => {
