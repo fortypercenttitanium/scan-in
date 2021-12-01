@@ -8,7 +8,6 @@ const SessionTableBody = ({ dataArr, handleSessionClick }) => {
 
   useEffect(() => {
     function handleKeyPress(e) {
-      console.log(e.key);
       if (e.key === 'Enter') {
         handleEnter();
       }
