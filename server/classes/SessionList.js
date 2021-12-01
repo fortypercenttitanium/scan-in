@@ -12,8 +12,6 @@ module.exports = class SessionList {
 
   createSession = async (ownerSocket, classID) => {
     try {
-      console.log('owner', ownerSocket.owner);
-      console.log('class ID', classID);
       // check db for open sessions
       const SESSION_LIST = gql`
         query ($userID: ID!) {
@@ -41,8 +39,7 @@ module.exports = class SessionList {
       // if open sessions, check session list for session
       if (openSessions.length) {
         const openSession = openSessions[0];
-        console.log('sessions: ', this.sessions);
-        console.log('this one: ', openSession.id);
+
         if (this.sessions[openSession.id]) {
           // if in session list, add subscriber
           return this.sessions[openSession.id].addSubscriber(ownerSocket);
@@ -58,7 +55,7 @@ module.exports = class SessionList {
       // if no open sessions, open session regularly
       const session = new Session(ownerSocket, classID);
       await session.init();
-      console.log('id in list: ', session.id);
+
       this.sessions[session.id] = session;
     } catch (err) {
       console.error(err);

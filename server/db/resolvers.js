@@ -162,7 +162,7 @@ const resolvers = {
     async sessionRecap(_, args) {
       try {
         const { id, userID } = args;
-        console.log('id: ', userID, id);
+
         const snapshot = await sessionsRef
           .where('owner', '==', userID)
           .where('id', '==', id)
@@ -392,7 +392,7 @@ const resolvers = {
         const startTime = new Date().getTime();
         const endTime = startTime + 1000 * 60 * 60 * 2;
         const id = nanoid();
-        console.log('id in resolver: ', id);
+
         const session = {
           id,
           classID,
