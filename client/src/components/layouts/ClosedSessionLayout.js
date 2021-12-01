@@ -34,6 +34,7 @@ function ClosedSessionLayout() {
         credentials: 'include',
       });
       const data = await request.json();
+      console.log('data', data);
       if (data) {
         setSessionData(data);
         setStudentData(bySignIn(convertLogToStudentStatus(data)));

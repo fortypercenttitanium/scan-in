@@ -11,6 +11,7 @@ const typeDefs = gql`
     studentsByID(ids: [ID]!): [Student]!
     studentList(classID: ID): [Student]!
     session(id: ID!): Session
+    sessionRecap(id: ID!, userID: ID!): Session
     sessionList(userID: ID!): [Session]!
     csvDownload(token: ID!): CsvDownload
   }
@@ -32,7 +33,7 @@ const typeDefs = gql`
     removeClassFromStudents(classID: ID!, studentIDs: [ID!]!): [Student]!
     addLogEntry(event: String!, payload: String, sessionID: ID!): Session
     addSession(classID: ID!): Session
-    editSession(teacherID: ID!, sessionID: ID!, endTime: String): Session
+    closeSession(id: ID!): Session!
     deleteSession(id: ID!): [Session]!
     csvDownload(data: String!): CsvDownload
     clearDownloads: [ID]!

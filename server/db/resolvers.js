@@ -159,6 +159,20 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
+    async sessionRecap(_, args) {
+      try {
+        const { id, userID } = args;
+        console.log('id: ', userID, id);
+        const snapshot = await sessionsRef
+          .where('owner', '==', userID)
+          .where('id', '==', id)
+          .get();
+
+        return snapshot.docs[0].data();
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
   },
   Mutation: {
     async addUser(parent, args) {
@@ -403,21 +417,48 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
+
     async addLogEntry(_, args) {
-      const { event, payload, sessionID } = args;
-      const timeStamp = new Date().getTime().toString();
+      try {
+        const { event, payload, sessionID } = args;
+        const timeStamp = new Date().getTime().toString();
 
-      await sessionsRef.doc(sessionID).update({
-        log: admin.firestore.FieldValue.arrayUnion({
-          event,
-          payload,
-          timeStamp,
-        }),
-      });
+        await sessionsRef.doc(sessionID).update({
+          log: admin.firestore.FieldValue.arrayUnion({
+            event,
+            payload,
+            timeStamp,
+          }),
+        });
 
-      const updatedSession = await sessionsRef.doc(sessionID).get();
+        const updatedSession = await sessionsRef.doc(sessionID).get();
 
-      return updatedSession.data();
+        return updatedSession.data();
+      } catch (err) {
+        throw new ApolloError(err);
+      }
+    },
+
+    async closeSession(_, args) {
+      try {
+        const { id } = args;
+        const timeStamp = new Date().getTime().toString();
+
+        await sessionsRef.doc(id).update({
+          log: admin.firestore.FieldValue.arrayUnion({
+            event: 'session-closed',
+            payload: timeStamp,
+            timeStamp,
+          }),
+          endTime: timeStamp,
+        });
+
+        const updatedSession = await sessionsRef.doc(id).get();
+
+        return updatedSession.data();
+      } catch (err) {
+        throw new ApolloError(err);
+      }
     },
   },
 };

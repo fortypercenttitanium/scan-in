@@ -413,7 +413,7 @@ router.get('/sessionrecap/:id', async (req, res, next) => {
   try {
     const SESSION = gql`
       query ($id: ID!, $userID: ID!) {
-        session(id: $id, userID: $userID) {
+        sessionRecap(id: $id, userID: $userID) {
           id
           className
           students {
@@ -440,9 +440,9 @@ router.get('/sessionrecap/:id', async (req, res, next) => {
 
     const now = new Date();
     const sessionIsExpired =
-      Number(result.session.endTime) < Number(now.getTime());
+      Number(result.sessionRecap.endTime) < Number(now.getTime());
 
-    res.json(sessionIsExpired ? result.session : null);
+    res.json(sessionIsExpired ? result.sessionRecap : null);
   } catch (err) {
     return next(err);
   }

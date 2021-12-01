@@ -66,6 +66,10 @@ function SocketProvider({ children }) {
         console.log(`Scan failed: ${payload.message}`);
         setLastUpdate(`Scan failed: ${payload.message}`);
       }
+
+      if (event === 'session-closed') {
+        socket.onCloseCallback();
+      }
     };
 
     if (process.env.NODE_ENV === 'development') {
@@ -74,7 +78,7 @@ function SocketProvider({ children }) {
   }
 
   function setOnCloseCallback(cb) {
-    socket.onclose = cb;
+    socket.onCloseCallback = cb;
   }
 
   function scanIn(studentID) {

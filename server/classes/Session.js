@@ -206,8 +206,41 @@ module.exports = class Session {
     this.#sockets.forEach((socket) => socket.send(message.toJSON()));
   }
 
-  closeSession = () => {
-    // todo: close session in db
+  closeSession = async () => {
+    const CLOSE_SESSION = gql`
+      mutation ($id: ID!) {
+        closeSession(id: $id) {
+          id
+          classID
+          className
+          startTime
+          endTime
+          log {
+            event
+            payload
+            timeStamp
+          }
+          students {
+            id
+            firstName
+            lastName
+          }
+        }
+      }
+    `;
+
+    const sessionData = await query(CLOSE_SESSION, { id: this.id });
+
+    this.broadcastMessage(
+      new SocketMessage({
+        sender: 'server',
+        message: {
+          event: 'session-closed',
+          payload: sessionData.closeSession,
+        },
+      }),
+    );
+
     this.#sockets.forEach((socket) => socket.close(1000, 'Session closed'));
     console.log('closing session ' + this.id);
   };

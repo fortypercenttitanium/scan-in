@@ -95,6 +95,11 @@ function SessionLayout() {
     return element.requestFullscreen();
   }
 
+  function handleClickClose() {
+    setSessionStatus('closing');
+    closeSession();
+  }
+
   return sessionStatus === 'connected' ? (
     <Box
       sx={{
@@ -172,7 +177,7 @@ function SessionLayout() {
             <p>Change expiration time in settings</p> */}
           </Box>
           <Box sx={{ my: 1, mx: 'auto' }}>
-            <Button variant="contained" onClick={closeSession}>
+            <Button variant="contained" onClick={handleClickClose}>
               Close attendance session
             </Button>
           </Box>
