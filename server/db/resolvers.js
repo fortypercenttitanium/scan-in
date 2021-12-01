@@ -1,7 +1,7 @@
 const admin = require('firebase-admin');
 const { ApolloError } = require('apollo-server');
 
-const serviceAccount = require('./serviceAccountKey.json');
+const serviceAccount = JSON.parse(process.env.CREDS);
 const { customAlphabet } = require('nanoid');
 
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 16);
