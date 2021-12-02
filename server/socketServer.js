@@ -25,7 +25,14 @@ wss.on('connection', (socket, req) => {
 
   passport.authenticate('jwt', (err, user, info) => {
     if (err || !user) {
-      socket.send('closing');
+      console.log('err', err);
+      console.log('!user', user);
+      socket.send(
+        new SocketMessage({
+          sender: 'server',
+          message: { event: 'socket-closed', payload: {} },
+        }),
+      );
       socket.close(4000, 'Unauthorized');
     } else {
       socket.owner = user.id;

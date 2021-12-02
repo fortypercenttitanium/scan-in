@@ -33,11 +33,8 @@ const resolvers = {
     async user(_, args) {
       const { email } = args;
       try {
-        console.log('EMAIL', email);
         const snapshot = await usersRef.where('email', '==', email).get();
-        console.log('SNAP', snapshot);
         const user = snapshot.docs[0].data() || null;
-        console.log('USER', user);
         return user;
       } catch (err) {
         console.log('ERROR!');
