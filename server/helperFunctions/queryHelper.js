@@ -3,11 +3,14 @@ const { ApolloError } = require('apollo-server-express');
 
 const PORT = process.env.PORT || 5000;
 
-console.log('port ', PORT);
+const url =
+  process.env.NODE_ENV === 'development'
+    ? `http://localhost:${PORT}/graphql`
+    : `https://scan-in.herokuapp.com/graphql`;
 
 async function query(q, variables) {
   try {
-    return await request(`/graphql`, q, variables);
+    return await request(url, q, variables);
   } catch (err) {
     throw new ApolloError(err);
   }
