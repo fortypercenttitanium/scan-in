@@ -9,21 +9,11 @@ const socketCookieParser = require('./helperFunctions/socketCookieParser');
 
 const PORT = process.env.SOCKET_PORT || 5001;
 
-// const server = app.listen(PORT, () =>
-//   console.log(`Socket server listening on port ${PORT}...`),
-// );
-
-// const wss = new WebSocket.Server({
-//   server,
-// });
-
 const wss = new WebSocket.Server({ noServer: true });
 
 wss.on('connection', (socket, req) => {
   // custom cookie parser
   req.cookies = socketCookieParser(req);
-  console.log('log test');
-  console.log('cookies', req);
 
   passport.authenticate('jwt', (err, user, info) => {
     if (err || !user) {
@@ -34,10 +24,6 @@ wss.on('connection', (socket, req) => {
             event: 'socket-closed',
             payload: {
               err,
-              user,
-              cookies: req.cookies,
-              req,
-              info,
             },
           },
         }).toJSON(),

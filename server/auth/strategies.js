@@ -109,12 +109,10 @@ const jwtStrategy = new JwtStrategy(jwtOptions, async (jwt, done) => {
   const userQuery = await query(GET_USER_BY_ID, { id: jwt.id });
   const userData = userQuery.userByID;
 
-  console.log('userData: ', userData);
   return done(null, userData);
 });
 
 function getTokenFromCookie(req) {
-  console.log('req.cookies: ', req.cookies);
   return req.cookies ? req.cookies['scan_in_access_token'] : null;
 }
 

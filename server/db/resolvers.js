@@ -37,7 +37,6 @@ const resolvers = {
         const user = snapshot.docs[0].data() || null;
         return user;
       } catch (err) {
-        console.log('ERROR!');
         throw new ApolloError(err);
       }
     },
