@@ -4,8 +4,6 @@ const { ApolloError } = require('apollo-server-express');
 const serviceAccount = JSON.parse(process.env.CREDS);
 const { customAlphabet } = require('nanoid');
 
-setTimeout(() => console.log('firebase account', serviceAccount), 20000);
-
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 16);
 
 admin.initializeApp({
@@ -13,8 +11,6 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
-
-setTimeout(() => console.log('db', db), 25000);
 
 let classesRef;
 let usersRef;
@@ -37,11 +33,14 @@ const resolvers = {
     async user(_, args) {
       const { email } = args;
       try {
+        console.log('EMAIL', email);
         const snapshot = await usersRef.where('email', '==', email).get();
-
+        console.log('SNAP', snapshot);
         const user = snapshot.docs[0].data() || null;
+        console.log('USER', user);
         return user;
       } catch (err) {
+        console.log('ERROR!');
         throw new ApolloError(err);
       }
     },
