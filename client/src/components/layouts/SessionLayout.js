@@ -117,16 +117,16 @@ function SessionLayout() {
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'space-between',
           maxHeight: '20%',
           alignItems: 'center',
           mx: 3,
+          position: 'relative',
         }}
       >
-        <Link to="/dashboard">
+        <Link style={{ position: 'absolute' }} to="/dashboard">
           <Typography variant="p">&lt; Back to classes</Typography>
         </Link>
-        <Box sx={{ display: 'block', textAlign: 'center' }}>
+        <Box sx={{ display: 'block', textAlign: 'center', m: 'auto' }}>
           <h1>{sessionData.className}</h1>
           <h2>{new Date().toLocaleDateString()}</h2>
           <h3>{clock}</h3>

@@ -38,7 +38,7 @@ router.get('/microsoft/cb', (req, res, next) => {
   )(req, res, next);
 });
 
-router.delete('/logout', (req, res) => {
+router.post('/logout', (req, res) => {
   req.logout();
   res.clearCookie('scan_in_access_token').sendStatus(200);
 });

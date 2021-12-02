@@ -36,6 +36,8 @@ export default function HomeLayout() {
     history.push(`/sessionrecap/${id}`);
   }
 
+  // TODO: check if user, keep state here, if no user, redirect home
+
   return (
     <Router>
       <Box

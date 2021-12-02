@@ -1,5 +1,3 @@
 {
-  "events": {
-    "restart": "./kill_server.sh"
-  }
+  "events": { "restart": "./kill_server.sh" }
 }
