@@ -31,7 +31,7 @@ wss.on('connection', (socket, req) => {
         new SocketMessage({
           sender: 'server',
           message: { event: 'socket-closed', payload: {} },
-        }),
+        }).toJSON(),
       );
       socket.close(4000, 'Unauthorized');
     } else {
