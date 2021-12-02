@@ -1,5 +1,5 @@
 const admin = require('firebase-admin');
-const { ApolloError } = require('apollo-server');
+const { ApolloError } = require('apollo-server-express');
 
 const serviceAccount = JSON.parse(process.env.CREDS);
 const { customAlphabet } = require('nanoid');
