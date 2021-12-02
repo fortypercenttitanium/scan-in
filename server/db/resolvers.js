@@ -14,7 +14,7 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-console.log('db'.db);
+console.log('db', db);
 
 let classesRef;
 let usersRef;
