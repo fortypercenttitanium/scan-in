@@ -106,12 +106,8 @@ const jwtStrategy = new JwtStrategy(jwtOptions, async (jwt, done) => {
     }
   `;
 
-  console.log('jwt', jwt);
-
   const userQuery = await query(GET_USER_BY_ID, { id: jwt.id });
   const userData = userQuery.userByID;
-
-  console.log('userData', userData);
 
   return done(null, userData);
 });
