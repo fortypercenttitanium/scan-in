@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useHistory, Link } from 'react-router-dom';
 import grey from '@mui/material/colors/grey';
 import green from '@mui/material/colors/green';
 import red from '@mui/material/colors/red';
@@ -91,12 +91,26 @@ function ClosedSessionLayout() {
           <Box
             sx={{
               display: 'flex',
-              justifyContent: 'space-between',
+              position: 'relative',
               maxHeight: '20%',
               alignItems: 'center',
               mx: 3,
+              width: '100%',
             }}
           >
+            <Box
+              sx={{
+                display: 'flex',
+                textAlign: 'center',
+                m: 'auto',
+                ml: 3,
+                position: 'absolute',
+              }}
+            >
+              <Link to="/dashboard">
+                <Typography variant="p">&lt; Back to classes</Typography>
+              </Link>
+            </Box>
             <Box sx={{ display: 'block', textAlign: 'center', m: 'auto' }}>
               <h1>{sessionData.className}</h1>
               <h3>
