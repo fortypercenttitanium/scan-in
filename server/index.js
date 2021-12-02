@@ -6,8 +6,7 @@ const authRouter = require('./routes/authRouter');
 const dbRouter = require('./routes/dbRouter');
 const downloadRouter = require('./routes/downloadRouter');
 const apolloServer = require('./db/apolloServer');
-require('./db/apolloServer');
-require('./socketServer');
+const wss = require('./socketServer');
 
 async function startServer() {
   const app = express();
@@ -30,10 +29,16 @@ async function startServer() {
     res.sendFile(path.resolve(__dirname, '../client/build/index.html'));
   });
 
-  app.listen(PORT, () =>
+  const server = app.listen(PORT, () =>
     console.log(`Server listening on port ${PORT}...\nGraphQL server listening at http://localhost:${PORT}${apolloServer.graphqlPath}
     `),
   );
+
+  server.on('upgrade', function (request, socket, head) {
+    wss.handleUpgrade(request, socket, head, function done(ws) {
+      wss.emit('connection', ws, request);
+    });
+  });
 }
 
 startServer();

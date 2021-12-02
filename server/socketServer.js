@@ -9,13 +9,15 @@ const socketCookieParser = require('./helperFunctions/socketCookieParser');
 
 const PORT = process.env.SOCKET_PORT || 5001;
 
-const server = app.listen(PORT, () =>
-  console.log(`Socket server listening on port ${PORT}...`),
-);
+// const server = app.listen(PORT, () =>
+//   console.log(`Socket server listening on port ${PORT}...`),
+// );
 
-const wss = new WebSocket.Server({
-  server,
-});
+// const wss = new WebSocket.Server({
+//   server,
+// });
+
+const wss = new WebSocket.Server({ noServer: true });
 
 wss.on('connection', (socket, req) => {
   // custom cookie parser

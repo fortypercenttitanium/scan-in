@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect } from 'react';
 import getLogTime from '../helperFunctions/getLogTime';
 import convertLogToStudentStatus from '../helperFunctions/convertLogToStudentStatus';
 export const SocketStore = createContext();
+
 let socket;
 
 function SocketProvider({ children }) {
@@ -20,7 +21,9 @@ function SocketProvider({ children }) {
 
   function init(classID) {
     console.log(`Initializing class session: ${classID}`);
-    socket = new WebSocket(`ws://localhost:5001`);
+
+    socket = new WebSocket('ws://localhost:5000');
+    // socket = new WebSocket(`ws://localhost:5001`);
 
     socket.onmessage = (message) => {
       const messageData = JSON.parse(message.data);
