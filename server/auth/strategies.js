@@ -33,11 +33,16 @@ const jwtOptions = {
   secretOrKey: process.env.JWT_SECRET_KEY,
 };
 
+const callbackURL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5000/auth/microsoft/cb'
+    : '/auth/microsoft/cb';
+
 const microsoftStrategy = new MicrosoftStrategy(
   {
     clientID: process.env.MICROSOFT_CLIENT_ID,
     clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
-    callbackURL: 'http://localhost:5000/auth/microsoft/cb',
+    callbackURL,
     scope: ['openid', 'profile', 'email', 'offline_access'],
   },
   async function (accessToken, refreshToken, profile, done) {

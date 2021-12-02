@@ -1,13 +1,18 @@
 import React, { createContext, useState, useEffect } from 'react';
 export const Store = createContext();
 
+const url =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5000/db/userData'
+    : '/db/userData';
+
 function Provider({ children }) {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const request = await fetch('http://localhost:5000/db/userData', {
+        const request = await fetch(url, {
           credentials: 'include',
         });
 
