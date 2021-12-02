@@ -24,7 +24,12 @@ function SocketProvider({ children }) {
   function init(classID) {
     console.log(`Initializing class session: ${classID}`);
 
-    socket = new WebSocket(`ws://localhost:${PORT}`);
+    const socketURL =
+      process.env.NODE_ENV === 'development'
+        ? `ws://localhost:${PORT}`
+        : `wss://scan-in.herokuapp.com`;
+
+    socket = new WebSocket(socketURL);
 
     socket.onmessage = (message) => {
       const messageData = JSON.parse(message.data);
