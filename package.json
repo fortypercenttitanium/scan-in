@@ -9,8 +9,7 @@
     "dev:frontend": "cd client && npm start",
     "dev:backend": "NODE_ENV=development nodemon server/index",
     "build": "npm run install-all && cd client && npm run build",
-    "install-all": "npm i && cd client && npm i",
-    "deploy": "npm run install-all && npm start"
+    "install-all": "npm i && cd client && npm i"
   },
   "repository": {
     "type": "git",

@@ -2,6 +2,11 @@ import React, { useContext } from 'react';
 import { Box, Typography } from '@mui/material';
 import { Store } from '../../store/Provider';
 
+const authURL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5000/auth/microsoft'
+    : '/auth/microsoft';
+
 function Nav() {
   const { userData } = useContext(Store);
   return (
@@ -10,7 +15,7 @@ function Nav() {
         {userData ? (
           <Typography variant="h4">Hi, {userData.firstName}</Typography>
         ) : (
-          <a href="http://localhost:5000/auth/microsoft">
+          <a href={authURL}>
             <Typography variant="h4">Login</Typography>
           </a>
         )}
