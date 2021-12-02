@@ -22,6 +22,7 @@ const wss = new WebSocket.Server({ noServer: true });
 wss.on('connection', (socket, req) => {
   // custom cookie parser
   req.cookies = socketCookieParser(req);
+  console.log('cookies', req.cookies);
 
   passport.authenticate('jwt', (err, user, info) => {
     if (err || !user) {
@@ -33,6 +34,8 @@ wss.on('connection', (socket, req) => {
             payload: {
               err,
               user,
+              cookies: req.cookies,
+              info,
             },
           },
         }).toJSON(),
