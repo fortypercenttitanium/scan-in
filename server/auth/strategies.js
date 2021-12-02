@@ -48,10 +48,13 @@ const microsoftStrategy = new MicrosoftStrategy(
   async function (accessToken, refreshToken, profile, done) {
     try {
       const { name, emails } = profile;
-      console.log('profile: ', profile);
 
       // find a user in the database
-      let { user } = await query(GET_USER_BY_EMAIL, { email: emails[0].value });
+      const { user } = await query(GET_USER_BY_EMAIL, {
+        email: emails[0].value,
+      });
+
+      console.log('user: ', user);
 
       // create a new user
       if (!user) {
@@ -61,6 +64,7 @@ const microsoftStrategy = new MicrosoftStrategy(
           lastName: name.familyName,
           email: emails[0].value,
         };
+        console.log('user2: ', user);
         // save to db
         const mutation = gql`
           mutation AddUser(
