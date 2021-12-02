@@ -12,6 +12,9 @@ router.get(
 );
 
 router.get('/microsoft/cb', (req, res, next) => {
+  const redirect =
+    process.env.NODE_ENV === 'development' ? 'http://localhost:3000/' : '/';
+
   passport.authenticate(
     'microsoft',
     {
@@ -30,7 +33,7 @@ router.get('/microsoft/cb', (req, res, next) => {
           httpOnly: true,
           encode: String,
         })
-        .redirect('/');
+        .redirect(redirect);
     },
   )(req, res, next);
 });
