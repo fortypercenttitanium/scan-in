@@ -1,7 +1,6 @@
 const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const cors = require('cors');
 const authRouter = require('./routes/authRouter');
 const dbRouter = require('./routes/dbRouter');
 const downloadRouter = require('./routes/downloadRouter');

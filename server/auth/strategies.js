@@ -54,8 +54,6 @@ const microsoftStrategy = new MicrosoftStrategy(
         email: emails[0].value,
       });
 
-      console.log('user: ', user);
-
       // create a new user
       if (!user) {
         user = {
@@ -64,7 +62,6 @@ const microsoftStrategy = new MicrosoftStrategy(
           lastName: name.familyName,
           email: emails[0].value,
         };
-        console.log('user2: ', user);
         // save to db
         const mutation = gql`
           mutation AddUser(

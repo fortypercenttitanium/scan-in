@@ -4,12 +4,18 @@ const { ApolloError } = require('apollo-server-express');
 const serviceAccount = JSON.parse(process.env.CREDS);
 const { customAlphabet } = require('nanoid');
 
+console.log('firebase account', serviceAccount);
+
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 16);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
+
 const db = admin.firestore();
+
+console.log('db'.db);
+
 let classesRef;
 let usersRef;
 let studentsRef;
