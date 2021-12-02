@@ -36,7 +36,7 @@ const jwtOptions = {
 const callbackURL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:5000/auth/microsoft/cb'
-    : 'https://scan-in.herokuapp.com/auth/microsoft/cb';
+    : '/auth/microsoft/cb';
 
 const microsoftStrategy = new MicrosoftStrategy(
   {
@@ -48,6 +48,7 @@ const microsoftStrategy = new MicrosoftStrategy(
   async function (accessToken, refreshToken, profile, done) {
     try {
       const { name, emails } = profile;
+      console.log('profile: ', profile);
 
       // find a user in the database
       let { user } = await query(GET_USER_BY_EMAIL, { email: emails[0].value });
