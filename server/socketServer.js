@@ -11,7 +11,14 @@ const PORT = process.env.SOCKET_PORT || 5001;
 
 const wss = new WebSocket.Server({ noServer: true });
 
+function heartbeat() {
+  this.isAlive = true;
+}
+
 wss.on('connection', (socket, req) => {
+  socket.isAlive = true;
+  socket.on('pong', heartbeat);
+
   // custom cookie parser
   req.cookies = socketCookieParser(req);
 
@@ -44,6 +51,19 @@ wss.on('connection', (socket, req) => {
       socket.send(connectedMessage.toJSON());
     }
   })(req);
+});
+
+const interval = setInterval(function ping() {
+  wss.clients.forEach(function each(ws) {
+    if (ws.isAlive === false) return ws.terminate();
+
+    ws.isAlive = false;
+    ws.ping();
+  });
+}, 10000);
+
+wss.on('close', function close() {
+  clearInterval(interval);
 });
 
 module.exports = wss;
