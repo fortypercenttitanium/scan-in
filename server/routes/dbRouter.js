@@ -213,8 +213,50 @@ router.put('/students', async (req, res, next) => {
   try {
     const { students, classID } = req.body;
 
+    // get full student list
+    // check for brand new students
+    // add student to db (no classes)
+    // get students currently in class
+    // remove students not in list
+    // remove class from students list
+    // add students in list
+    // add class to students list
+    // set class
+
+    const ALL_STUDENTS = gql`
+      query {
+        allStudents {
+          id
+        }
+      }
+    `;
+
+    // TODO: Fix adding students, include empty class. also do this when adding a new class.
+
+    const { allStudents } = await query(ALL_STUDENTS);
+
+    const newStudents = students.filter((student) => {
+      return !allStudents.some((allStudent) => {
+        return allStudent.id === student.id;
+      });
+    });
+
+    if (newStudents.length) {
+      const ADD_STUDENTS = gql`
+        mutation ($students: [StudentInput!]!) {
+          addStudents(students: $students) {
+            firstName
+            lastName
+            id
+          }
+        }
+      `;
+
+      await query(ADD_STUDENTS, { students: newStudents });
+    }
+
     const GET_STUDENTS_BY_IDS = gql`
-      query getStudentsByID($ids: [ID!]!) {
+      query ($ids: [ID!]!) {
         studentsByID(ids: $ids) {
           id
         }
@@ -257,31 +299,6 @@ router.put('/students', async (req, res, next) => {
     const { studentsByID: currentStudents } = await query(GET_STUDENTS_BY_IDS, {
       ids: updatedStudentIDs,
     });
-
-    const newStudents = students.filter(
-      (student) =>
-        !currentStudents.some(
-          (currentStudent) => student.id === currentStudent.id,
-        ),
-    );
-
-    if (newStudents.length) {
-      const ADD_STUDENTS = gql`
-        mutation AddStudents($students: [StudentInput!]!) {
-          addStudents(students: $students) {
-            firstName
-            lastName
-            id
-          }
-        }
-      `;
-
-      await query(ADD_STUDENTS, { students: newStudents });
-      const { studentsByID } = await query(GET_STUDENTS_BY_IDS, {
-        ids: updatedStudentIDs,
-      });
-      return res.json(studentsByID);
-    }
 
     res.json(currentStudents);
   } catch (err) {

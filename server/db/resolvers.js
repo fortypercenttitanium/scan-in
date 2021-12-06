@@ -52,6 +52,13 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
+    async allStudents() {
+      const snapshot = await studentsRef.get();
+
+      const result = await snapshot.docs.map((doc) => doc.data());
+
+      return result;
+    },
     async class(_, args) {
       try {
         const { id, userID } = args;
@@ -127,9 +134,9 @@ const resolvers = {
         const data = snapshot.docs.map((doc) => doc.data());
 
         if (args.classID) {
-          return data.filter((student) =>
-            student.classes.includes(args.classID),
-          );
+          return data.filter((student) => {
+            student.classes.includes(args.classID);
+          });
         }
 
         return data;

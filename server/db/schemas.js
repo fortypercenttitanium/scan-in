@@ -3,6 +3,7 @@ const { gql } = require('apollo-server-express');
 const typeDefs = gql`
   type Query {
     user(email: String!): User
+    allStudents: [Student]!
     userByID(id: ID!): User
     class(id: ID!, userID: ID!): Class
     classList(userID: ID!): [Class]!
@@ -66,7 +67,7 @@ const typeDefs = gql`
     id: ID!
     firstName: String!
     lastName: String!
-    classes: [ID]
+    classes: [ID]!
   }
 
   type Session {
