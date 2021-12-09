@@ -8,6 +8,10 @@ import {
   Button,
   Stack,
   Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from '@mui/material';
 import JsonFetcher from '../../helperFunctions/fetchers/JsonFetcher';
 import AddClass from './AddClass';
@@ -109,6 +113,7 @@ function ClassList({ onSubmit: startSession }) {
     });
 
     setSelectedClass('');
+    setDialogOpen('');
     setDataShouldHydrate([...dataShouldHydrate, 'classes']);
   }
 
@@ -125,6 +130,25 @@ function ClassList({ onSubmit: startSession }) {
           setDialogOpen={setDialogOpen}
           hydrateData={hydrateData}
         />
+      </Dialog>
+      <Dialog
+        open={dialogOpen === 'delete'}
+        onClose={() => setDialogOpen('')}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Delete class?</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete this class?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen('delete')} autoFocus>
+            Cancel
+          </Button>
+          <Button onClick={handleDelete}>DELETE</Button>
+        </DialogActions>
       </Dialog>
       <Box
         m={'24px auto'}
@@ -175,7 +199,7 @@ function ClassList({ onSubmit: startSession }) {
               Edit class
             </Button>
             <Button
-              onClick={handleDelete}
+              onClick={() => setDialogOpen('delete')}
               variant="outlined"
               type="button"
               disabled={!selectedClass}
