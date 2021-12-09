@@ -213,7 +213,6 @@ router.put('/class', async (req, res, next) => {
     });
 
     // compare, remove students not in current list
-    console.log('nsi', newStudentIDs);
     const removeStudents = currentStudentIDs.studentList.filter(
       (id) => !newStudentIDs.includes(id),
     );
