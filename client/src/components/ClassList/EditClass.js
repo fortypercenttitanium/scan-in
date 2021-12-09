@@ -91,7 +91,7 @@ function EditClass({ setDialogOpen, selectedClass, hydrateData }) {
       }
 
       const studentsResult = await fetch('/db/students', {
-        method: 'PUT',
+        method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
