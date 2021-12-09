@@ -52,6 +52,13 @@ const resolvers = {
         throw new ApolloError(err);
       }
     },
+    async allStudents() {
+      const snapshot = await studentsRef.get();
+
+      const result = await snapshot.docs.map((doc) => doc.data());
+
+      return result;
+    },
     async class(_, args) {
       try {
         const { id, userID } = args;
@@ -127,9 +134,9 @@ const resolvers = {
         const data = snapshot.docs.map((doc) => doc.data());
 
         if (args.classID) {
-          return data.filter((student) =>
-            student.classes.includes(args.classID),
-          );
+          return data.filter((student) => {
+            student.classes.includes(args.classID);
+          });
         }
 
         return data;
@@ -197,15 +204,21 @@ const resolvers = {
     async addStudents(_, args) {
       try {
         const { students } = args;
+
+        const studentsReadyForDB = students.map((student) => ({
+          ...student,
+          classes: [],
+        }));
+
         const batch = db.batch();
 
-        students.forEach((student) => {
+        studentsReadyForDB.forEach((student) => {
           batch.set(studentsRef.doc(student.id), student, { merge: true });
         });
 
         await batch.commit();
 
-        return students;
+        return studentsReadyForDB;
       } catch (err) {
         throw new ApolloError(err);
       }
@@ -258,18 +271,41 @@ const resolvers = {
     },
     async editClass(_, args) {
       try {
-        const { name, students, owner, id } = args;
+        const { name, students, id } = args;
         const editedData = {
           name,
           students,
         };
 
+        const studentBatch = db.batch();
+
         await classesRef.doc(id).set(editedData, { merge: true });
 
-        const snap = await classesRef.where('id', '==', id).get();
-        const newClassList = snap.docs[0].data();
+        // get all students in class and add this class
+        const studentsSnap = await studentsRef.get();
+        const studentsToEdit = studentsSnap.docs
+          .map((student) => student.data())
+          .filter(({ id: studentID, classes }) => {
+            return students.includes(studentID) && !classes.includes(id);
+          });
 
-        return newClassList;
+        const studentsWithClass = studentsToEdit.map((student) => ({
+          ...student,
+          classes: [...student.classes, id],
+        }));
+
+        studentsWithClass.forEach((student) => {
+          studentBatch.set(studentsRef.doc(student.id), student, {
+            merge: true,
+          });
+        });
+
+        await studentBatch.commit();
+
+        const newClassSnap = await classesRef.doc(id).get();
+        const newClass = await newClassSnap.data();
+
+        return newClass;
       } catch (err) {
         throw new ApolloError(err);
       }
@@ -309,6 +345,22 @@ const resolvers = {
         });
 
         await batch.commit();
+
+        // remove students from class list
+        const classSnap = await classesRef.doc(classID).get();
+
+        const classData = await classSnap.data();
+
+        const newStudentList = classData.students.filter(
+          (student) => !studentIDs.includes(student),
+        );
+
+        const newClassData = {
+          ...classData,
+          students: newStudentList,
+        };
+
+        await classesRef.doc(classID).set(newClassData);
 
         return newStudents;
       } catch (err) {
