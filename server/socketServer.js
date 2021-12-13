@@ -1,5 +1,3 @@
-const express = require('express');
-const app = express();
 const passport = require('./auth/passport');
 const WebSocket = require('ws');
 const SocketMessage = require('./classes/SocketMessage');

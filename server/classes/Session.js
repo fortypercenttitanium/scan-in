@@ -130,7 +130,7 @@ module.exports = class Session {
         id: this.id,
       });
 
-      this.broadcastMessage(
+      this.sendMessage(
         new SocketMessage({
           sender: 'server',
           message: {
@@ -138,6 +138,7 @@ module.exports = class Session {
             payload: sessionData.session,
           },
         }),
+        socket.id,
       );
     }
   }
@@ -203,6 +204,13 @@ module.exports = class Session {
   broadcastMessage(message) {
     message.validateMessage();
     this.#sockets.forEach((socket) => socket.send(message.toJSON()));
+  }
+
+  sendMessage(message, recipientID) {
+    message.validateMessage();
+    this.#sockets
+      .find((socket) => socket.id === recipientID)
+      ?.send(message.toJSON());
   }
 
   closeSession = async () => {
