@@ -26,12 +26,16 @@ router.get('/microsoft/cb', (req, res, next) => {
 
       const accessToken = createAccessToken(user);
 
+      // set cookie age to 90 days
+      const cookieAge = 1000 * 60 * 60 * 24 * 90;
+
       res
         .status(201)
         .cookie('scan_in_access_token', accessToken, {
           secure: true,
           httpOnly: true,
           encode: String,
+          maxAge: cookieAge,
         })
         .redirect(redirect);
     },
