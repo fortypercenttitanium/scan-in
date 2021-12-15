@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Box, Typography } from '@mui/material';
-import { Store } from '../../store/Provider';
+import { UserStore } from '../../store/UserProvider';
 
 const authURL =
   process.env.NODE_ENV === 'development'
@@ -13,7 +13,7 @@ const logoutURL =
     : '/auth/logout';
 
 function Nav() {
-  const { userData } = useContext(Store);
+  const { userData } = useContext(UserStore);
 
   async function handleLogout() {
     await fetch(logoutURL, {

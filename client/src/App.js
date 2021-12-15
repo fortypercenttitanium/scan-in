@@ -14,7 +14,8 @@ import SessionLayout from './components/layouts/SessionLayout';
 import ClosedSessionLayout from './components/layouts/ClosedSessionLayout';
 import SocketProvider from './store/SocketProvider';
 import Footer from './components/Footer/Footer';
-import { Store } from './store/Provider';
+import AuthRedirect from './customHooks/AuthRedirect';
+import { UserStore } from './store/UserProvider';
 
 function WelcomeScreen() {
   return (
@@ -27,7 +28,7 @@ function WelcomeScreen() {
 }
 
 function App() {
-  const { userData } = useContext(Store);
+  const { userData } = useContext(UserStore);
 
   return (
     <>
@@ -52,19 +53,25 @@ function App() {
           <Router>
             <Switch>
               <Route exact path="/">
-                {userData ? <Redirect to="/dashboard" /> : <WelcomeScreen />}
+                {userData && !userData.loading ? (
+                  <Redirect to="/dashboard" />
+                ) : (
+                  <WelcomeScreen />
+                )}
               </Route>
-              <Route path="/dashboard">
-                <HomeLayout />
-              </Route>
-              <Route path="/session/:id">
-                <SocketProvider>
-                  <SessionLayout />
-                </SocketProvider>
-              </Route>
-              <Route path="/sessionrecap/:id">
-                <ClosedSessionLayout />
-              </Route>
+              <AuthRedirect>
+                <Route path="/dashboard">
+                  <HomeLayout />
+                </Route>
+                <Route path="/session/:id">
+                  <SocketProvider>
+                    <SessionLayout />
+                  </SocketProvider>
+                </Route>
+                <Route path="/sessionrecap/:id">
+                  <ClosedSessionLayout />
+                </Route>
+              </AuthRedirect>
             </Switch>
           </Router>
         </Box>

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -20,7 +20,7 @@ function LinkTab(props) {
 }
 
 export default function HomeLayout() {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
   const history = useHistory();
   const { path, url } = useRouteMatch();
 
@@ -35,8 +35,6 @@ export default function HomeLayout() {
   function handleSessionRecap(id) {
     history.push(`/sessionrecap/${id}`);
   }
-
-  // TODO: check if user, keep state here, if no user, redirect home
 
   return (
     <Router>

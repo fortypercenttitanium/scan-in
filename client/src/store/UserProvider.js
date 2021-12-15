@@ -1,13 +1,13 @@
 import React, { createContext, useState, useEffect } from 'react';
-export const Store = createContext();
+export const UserStore = createContext();
 
 const url =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:5000/db/userData'
     : '/db/userData';
 
-function Provider({ children }) {
-  const [userData, setUserData] = useState(null);
+function UserProvider({ children }) {
+  const [userData, setUserData] = useState({ loading: true });
 
   useEffect(() => {
     async function fetchData() {
@@ -19,9 +19,12 @@ function Provider({ children }) {
         if (request.ok) {
           const response = await request.json();
           setUserData(response);
+        } else {
+          setUserData(null);
         }
       } catch (err) {
         console.log('No user found');
+        setUserData(null);
       }
     }
 
@@ -29,10 +32,10 @@ function Provider({ children }) {
   }, [setUserData]);
 
   return (
-    <Store.Provider value={{ userData, setUserData }}>
+    <UserStore.Provider value={{ userData, setUserData }}>
       {children}
-    </Store.Provider>
+    </UserStore.Provider>
   );
 }
 
-export default Provider;
+export default UserProvider;
