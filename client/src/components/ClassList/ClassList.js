@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   InputLabel,
   MenuItem,
@@ -13,78 +13,19 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@mui/material';
-import JsonFetcher from '../../helperFunctions/fetchers/JsonFetcher';
 import AddClass from './AddClass';
 import EditClass from './EditClass';
 import Loading from '../Loading/Loading';
 
-const fetcher = new JsonFetcher();
-
-function ClassList({ onSubmit: startSession }) {
-  const [classes, setClasses] = useState([]);
-  const [openSession, setOpenSession] = useState({});
+function ClassList({
+  onSubmit: startSession,
+  classes,
+  openSession,
+  requestHydrate,
+  loading,
+}) {
   const [selectedClass, setSelectedClass] = useState('');
   const [dialogOpen, setDialogOpen] = useState('');
-  const [dataShouldHydrate, setDataShouldHydrate] = useState([
-    'classes',
-    'openSessions',
-  ]);
-
-  useEffect(() => {
-    async function getClasses() {
-      try {
-        const data = await fetcher.fetch('/db/classes');
-
-        if (data) {
-          setClasses(data);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
-    async function getOpenSessions() {
-      try {
-        const data = await fetcher.fetch('/db/openSessions');
-        if (data && data.length) {
-          setOpenSession(data[0]);
-        } else {
-          setOpenSession('');
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
-    async function hydrateData() {
-      if (dataShouldHydrate.length) {
-        const classesShouldHydrate = dataShouldHydrate.filter(
-          (item) => item === 'classes',
-        ).length;
-        const openSessionsShouldHydrate = dataShouldHydrate.filter(
-          (item) => item === 'openSessions',
-        ).length;
-
-        const dataDidHydrate = [];
-
-        if (classesShouldHydrate) {
-          await getClasses();
-          dataDidHydrate.push('classes');
-        }
-
-        if (openSessionsShouldHydrate) {
-          await getOpenSessions();
-          dataDidHydrate.push('openSessions');
-        }
-
-        setDataShouldHydrate(
-          dataShouldHydrate.filter((item) => !dataDidHydrate.includes(item)),
-        );
-      }
-    }
-
-    hydrateData();
-  }, [setClasses, dataShouldHydrate]);
 
   function handleClickSelect(e) {
     setSelectedClass(e.target.value);
@@ -94,10 +35,6 @@ function ClassList({ onSubmit: startSession }) {
     e.preventDefault();
     const classSession = openSession.classID || selectedClass;
     startSession(classSession);
-  }
-
-  function hydrateData(type) {
-    setDataShouldHydrate([...dataShouldHydrate, type]);
   }
 
   async function handleDelete(e) {
@@ -114,13 +51,16 @@ function ClassList({ onSubmit: startSession }) {
 
     setSelectedClass('');
     setDialogOpen('');
-    setDataShouldHydrate([...dataShouldHydrate, 'classes']);
+    requestHydrate('classes');
   }
 
   return (
     <form onSubmit={handleSubmit}>
       <Dialog open={dialogOpen === 'add'} onClose={() => setDialogOpen('')}>
-        <AddClass setDialogOpen={setDialogOpen} hydrateData={hydrateData} />
+        <AddClass
+          setDialogOpen={setDialogOpen}
+          requestHydrate={requestHydrate}
+        />
       </Dialog>
       <Dialog open={dialogOpen === 'edit'} onClose={() => setDialogOpen('')}>
         <EditClass
@@ -128,7 +68,7 @@ function ClassList({ onSubmit: startSession }) {
             (classObj) => classObj.id === selectedClass,
           )}
           setDialogOpen={setDialogOpen}
-          hydrateData={hydrateData}
+          requestHydrate={requestHydrate}
         />
       </Dialog>
       <Dialog
@@ -167,7 +107,7 @@ function ClassList({ onSubmit: startSession }) {
             onChange={handleClickSelect}
             required={!openSession}
           >
-            {dataShouldHydrate.length ? (
+            {loading ? (
               <Loading />
             ) : (
               classes.map((classObj) => (
@@ -208,7 +148,7 @@ function ClassList({ onSubmit: startSession }) {
             </Button>
           </Stack>
           <Button
-            disabled={!!dataShouldHydrate.length}
+            disabled={loading}
             variant="contained"
             type="submit"
             size="large"

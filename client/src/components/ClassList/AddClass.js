@@ -10,7 +10,7 @@ import {
 import parseStudentData from '../../helperFunctions/parseStudentData';
 import formatStudentList from '../../helperFunctions/formatStudentList';
 
-function AddClass({ setDialogOpen, hydrateData }) {
+function AddClass({ setDialogOpen, requestHydrate }) {
   const [className, setClassName] = useState('');
   const [studentData, setStudentData] = useState('');
   const [error, setError] = useState('');
@@ -92,7 +92,7 @@ function AddClass({ setDialogOpen, hydrateData }) {
           setClassName('');
           setStudentData('');
           setMessage('Class added successfully');
-          hydrateData('classes');
+          requestHydrate('classes');
 
           return setTimeout(() => setDialogOpen(''), 1000);
         }

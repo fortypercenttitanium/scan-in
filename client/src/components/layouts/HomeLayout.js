@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -14,6 +14,7 @@ import Paper from '@mui/material/Paper';
 import ClassList from '../ClassList/ClassList';
 import SessionList from '../SessionRecap/SessionList';
 import Help from '../Help/Help';
+import { UserStore } from '../../store/UserProvider';
 
 function LinkTab(props) {
   return <Tab sx={{ mx: 4 }} component={Link} {...props} />;
@@ -23,6 +24,9 @@ export default function HomeLayout() {
   const [value, setValue] = useState(0);
   const history = useHistory();
   const { path, url } = useRouteMatch();
+
+  const { classes, openSession, requestHydrate, loading, sessions } =
+    useContext(UserStore);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -70,10 +74,20 @@ export default function HomeLayout() {
         >
           <Switch>
             <Route exact path={path}>
-              <ClassList onSubmit={handleStartSession} />
+              <ClassList
+                classes={classes}
+                openSession={openSession}
+                requestHydrate={requestHydrate}
+                onSubmit={handleStartSession}
+                loading={loading}
+              />
             </Route>
             <Route path={`${path}/sessions`}>
-              <SessionList onSessionClick={handleSessionRecap} />
+              <SessionList
+                onSessionClick={handleSessionRecap}
+                sessions={sessions}
+                loading={loading}
+              />
             </Route>
             <Route path={`${path}/help`}>
               <Help />

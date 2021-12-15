@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import useDatabase from '../customHooks/useDatabase';
 export const UserStore = createContext();
 
 const url =
@@ -8,6 +9,10 @@ const url =
 
 function UserProvider({ children }) {
   const [userData, setUserData] = useState({ loading: true });
+  const { classes, sessions, openSession, requestHydrate, loading } =
+    useDatabase({
+      userData,
+    });
 
   useEffect(() => {
     async function fetchData() {
@@ -23,7 +28,7 @@ function UserProvider({ children }) {
           setUserData(null);
         }
       } catch (err) {
-        console.log('No user found');
+        console.error(err);
         setUserData(null);
       }
     }
@@ -32,7 +37,17 @@ function UserProvider({ children }) {
   }, [setUserData]);
 
   return (
-    <UserStore.Provider value={{ userData, setUserData }}>
+    <UserStore.Provider
+      value={{
+        userData,
+        setUserData,
+        classes,
+        sessions,
+        openSession,
+        requestHydrate,
+        loading,
+      }}
+    >
       {children}
     </UserStore.Provider>
   );

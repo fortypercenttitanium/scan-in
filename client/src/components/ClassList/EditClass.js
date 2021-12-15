@@ -11,7 +11,7 @@ import {
 import parseStudentData from '../../helperFunctions/parseStudentData';
 import formatStudentList from '../../helperFunctions/formatStudentList';
 
-function EditClass({ setDialogOpen, selectedClass, hydrateData }) {
+function EditClass({ setDialogOpen, selectedClass, requestHydrate }) {
   const [className, setClassName] = useState(selectedClass.name || '');
   const [studentData, setStudentData] = useState('');
   const [loading, setLoading] = useState(true);
@@ -129,7 +129,7 @@ function EditClass({ setDialogOpen, selectedClass, hydrateData }) {
           setClassName('');
           setStudentData('');
           setMessage('Class edited successfully');
-          hydrateData('classes');
+          requestHydrate('classes');
 
           return setTimeout(() => setDialogOpen(''), 1000);
         }

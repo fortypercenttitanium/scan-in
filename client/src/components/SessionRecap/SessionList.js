@@ -1,33 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Box from '@mui/material/Box';
 import SessionsTable from './SessionsTable';
 import Loading from '../Loading/Loading';
 
-function SessionList({ onSessionClick: handleSessionClick }) {
-  const [sessions, setSessions] = useState([]);
-  const [dataIsStale, setDataIsStale] = useState(true);
-
-  useEffect(() => {
-    async function getClasses() {
-      try {
-        const response = await fetch('/db/sessions', {
-          credentials: 'include',
-          method: 'GET',
-        });
-        if (response.ok) {
-          const json = await response.json();
-          setSessions(json);
-          setDataIsStale(false);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    if (dataIsStale) {
-      getClasses();
-    }
-  }, [setSessions, dataIsStale]);
-
+function SessionList({
+  onSessionClick: handleSessionClick,
+  sessions,
+  loading,
+}) {
   return (
     <Box
       sx={{
@@ -40,7 +20,7 @@ function SessionList({ onSessionClick: handleSessionClick }) {
         overflow: 'auto',
       }}
     >
-      {dataIsStale ? (
+      {loading ? (
         <Loading />
       ) : (
         <SessionsTable
