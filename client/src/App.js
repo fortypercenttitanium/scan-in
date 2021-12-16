@@ -15,6 +15,7 @@ import ClosedSessionLayout from './components/layouts/ClosedSessionLayout';
 import SocketProvider from './store/SocketProvider';
 import Footer from './components/Footer/Footer';
 import AuthRedirect from './customHooks/AuthRedirect';
+import NotFound from './NotFound';
 import { UserStore } from './store/UserProvider';
 
 function WelcomeScreen() {
@@ -59,19 +60,24 @@ function App() {
                   <WelcomeScreen />
                 )}
               </Route>
-              <AuthRedirect>
-                <Route path="/dashboard">
-                  <HomeLayout />
-                </Route>
-                <Route path="/session/:id">
+              <Route path="/dashboard">
+                <HomeLayout />
+              </Route>
+              <Route path="/session/:id">
+                <AuthRedirect>
                   <SocketProvider>
                     <SessionLayout />
                   </SocketProvider>
-                </Route>
-                <Route path="/sessionrecap/:id">
+                </AuthRedirect>
+              </Route>
+              <Route path="/sessionrecap/:id">
+                <AuthRedirect>
                   <ClosedSessionLayout />
-                </Route>
-              </AuthRedirect>
+                </AuthRedirect>
+              </Route>
+              <Route>
+                <NotFound />
+              </Route>
             </Switch>
           </Router>
         </Box>
