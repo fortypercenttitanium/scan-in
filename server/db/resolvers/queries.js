@@ -30,13 +30,6 @@ export default function queries({
         throw new ApolloError(err);
       }
     },
-    async allStudents() {
-      const snapshot = await studentsRef.get();
-
-      const result = await snapshot.docs.map((doc) => doc.data());
-
-      return result;
-    },
     async class(_, args) {
       try {
         const { id, userID } = args;
@@ -47,25 +40,6 @@ export default function queries({
           .get();
 
         const result = snapshot.docs[0].data() || null;
-
-        return result;
-      } catch (err) {
-        throw new ApolloError(err);
-      }
-    },
-    async classByName(_, args) {
-      try {
-        const { name, userID, id } = args;
-
-        const snap = await classesRef
-          .where('owner', '==', userID)
-          .where('name', '==', name)
-          .where('id', '!=', id)
-          .get();
-
-        const docs = snap.docs.map((doc) => doc.data());
-
-        const result = docs[0] || null;
 
         return result;
       } catch (err) {

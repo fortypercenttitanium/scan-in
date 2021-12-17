@@ -3,12 +3,9 @@ import { gql } from 'apollo-server-express';
 const typeDefs = gql`
   type Query {
     user(email: String!): User
-    allStudents: [Student]!
     userByID(id: ID!): User
     class(id: ID!, userID: ID!): Class
     classList(userID: ID!): [Class]!
-    classByName(name: String!, userID: ID!, id: ID): Class
-    student(id: ID!): Student
     studentsByID(ids: [ID]!): [Student]!
     studentList(classID: ID): [Student]!
     session(id: ID!): Session
@@ -29,15 +26,11 @@ const typeDefs = gql`
     editClass(name: String!, students: [ID]!, id: ID!): Class!
     deleteClass(id: ID!): Class!
     addStudents(students: [StudentInput!]!): [Student]!
-    updateStudents(input: [StudentInput!]!): [Student]!
-    editStudents(input: [StudentInput]!): Class
     removeClassFromStudents(classID: ID!, studentIDs: [ID!]!): [Student]!
     addLogEntry(event: String!, payload: String, sessionID: ID!): Session
     addSession(classID: ID!): Session
     closeSession(id: ID!): Session!
-    deleteSession(id: ID!): [Session]!
     csvDownload(data: String!): CsvDownload
-    clearDownloads: [ID]!
   }
 
   input StudentInput {
@@ -48,11 +41,8 @@ const typeDefs = gql`
 
   type Class {
     id: ID!
-    "The name of the class"
     name: String!
-    "The teacher who created the class"
     owner: ID!
-    "Students in the class"
     students: [ID]!
   }
 

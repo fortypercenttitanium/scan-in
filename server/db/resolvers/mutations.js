@@ -219,39 +219,6 @@ export default function mutations({
         throw new Error(err);
       }
     },
-    async clearDownloads() {
-      try {
-        // filter down to all downloads that  have expired
-        const now = new Date().getTime();
-        const expiredDownloads = await db;
-        downloadsRef.where('expires', '<', now).get();
-
-        // get the IDs of downloads deleted
-        const result = expiredDownloads.docs.map((doc) => doc.data().token);
-        // delete each doc
-        expiredDownloads.docs.forEach((download) => download.ref.delete());
-
-        return result;
-      } catch (err) {
-        throw new Error(err);
-      }
-    },
-    async updateStudents(_, args) {
-      try {
-        const [students] = args;
-        const batch = db.batch();
-
-        students.forEach((student) => {
-          batch.set(studentsRef, student);
-        });
-
-        await batch.commit();
-
-        return students;
-      } catch (err) {
-        throw new Error(err);
-      }
-    },
     async addSession(_, args) {
       try {
         const { classID } = args;
