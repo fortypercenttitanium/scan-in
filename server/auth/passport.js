@@ -1,9 +1,9 @@
-const passport = require('passport');
-const strategies = require('./strategies');
+import passport from 'passport';
+import strategies from './strategies.js';
 
 const { microsoftStrategy, jwtStrategy } = strategies;
 
 passport.use(microsoftStrategy);
 passport.use(jwtStrategy);
 
-module.exports = passport;
+export default passport;

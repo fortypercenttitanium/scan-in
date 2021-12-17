@@ -1,4 +1,4 @@
-class SocketMessage {
+export default class SocketMessage {
   constructor({ sender, message, user }) {
     this.sender = sender;
     this.message = message;
@@ -19,5 +19,3 @@ class SocketMessage {
     return JSON.stringify({ sender: this.sender, message: this.message });
   }
 }
-
-module.exports = SocketMessage;

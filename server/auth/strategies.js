@@ -1,10 +1,11 @@
-const MicrosoftStrategy = require('passport-microsoft').Strategy;
-const JwtStrategy = require('passport-jwt').Strategy;
-const { gql } = require('graphql-request');
-const { nanoid } = require('nanoid');
-const query = require('../helperFunctions/queryHelper');
+import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
+import { Strategy as JwtStrategy } from 'passport-jwt';
+import { gql } from 'graphql-request';
+import { nanoid } from 'nanoid';
+import query from '../helperFunctions/queryHelper.js';
+import dotenv from 'dotenv';
 
-require('dotenv').config();
+dotenv.config();
 
 const GET_USER_BY_EMAIL = gql`
   query findUserByEmail($email: String!) {
@@ -115,5 +116,4 @@ const jwtStrategy = new JwtStrategy(jwtOptions, async (jwt, done) => {
 function getTokenFromCookie(req) {
   return req.cookies ? req.cookies['scan_in_access_token'] : null;
 }
-
-module.exports = { microsoftStrategy, jwtStrategy };
+export default { microsoftStrategy, jwtStrategy };

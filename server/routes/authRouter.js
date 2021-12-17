@@ -1,9 +1,12 @@
-const router = require('express').Router();
-const passport = require('../auth/passport');
-const jwt = require('jsonwebtoken');
-const { gql } = require('graphql-request');
-const query = require('../helperFunctions/queryHelper');
-require('dotenv').config();
+import { Router } from 'express';
+import passport from '../auth/passport.js';
+import jwt from 'jsonwebtoken';
+import { gql } from 'graphql-request';
+import query from '../helperFunctions/queryHelper.js';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const router = Router();
 
 router.get(
   '/microsoft',
@@ -73,4 +76,4 @@ function createAccessToken(user) {
   return jwt.sign(user, process.env.JWT_SECRET_KEY, { expiresIn: '30d' });
 }
 
-module.exports = router;
+export default router;

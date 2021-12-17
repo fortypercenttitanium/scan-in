@@ -1,188 +1,16 @@
-const admin = require('firebase-admin');
-const { ApolloError } = require('apollo-server-express');
-
-const serviceAccount = JSON.parse(process.env.CREDS);
-const { customAlphabet } = require('nanoid');
-
+import { customAlphabet } from 'nanoid';
+import admin from 'firebase-admin';
 const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 16);
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
-const db = admin.firestore();
-
-let classesRef;
-let usersRef;
-let studentsRef;
-let downloadsRef;
-let sessionsRef;
-
-async function createRefs() {
-  classesRef = await db.collection('classes');
-  usersRef = await db.collection('users');
-  studentsRef = await db.collection('students');
-  downloadsRef = await db.collection('downloads');
-  sessionsRef = await db.collection('sessions');
-}
-
-createRefs();
-
-const resolvers = {
-  Query: {
-    async user(_, args) {
-      const { email } = args;
-      try {
-        const snapshot = await usersRef.where('email', '==', email).get();
-        const user = snapshot.docs[0].data() || null;
-        return user;
-      } catch (err) {
-        throw new ApolloError(err);
-      }
-    },
-    async userByID(_, args) {
-      try {
-        const { id } = args;
-        const snapshot = await usersRef.doc(id).get();
-
-        const user = snapshot.data() || null;
-
-        return user;
-      } catch (err) {
-        throw new ApolloError(err);
-      }
-    },
-    async allStudents() {
-      const snapshot = await studentsRef.get();
-
-      const result = await snapshot.docs.map((doc) => doc.data());
-
-      return result;
-    },
-    async class(_, args) {
-      try {
-        const { id, userID } = args;
-
-        const snapshot = await classesRef
-          .where('owner', '==', userID)
-          .where('id', '==', id)
-          .get();
-
-        const result = snapshot.docs[0].data() || null;
-
-        return result;
-      } catch (err) {
-        throw new ApolloError(err);
-      }
-    },
-    async classByName(_, args) {
-      try {
-        const { name, userID, id } = args;
-
-        const snap = await classesRef
-          .where('owner', '==', userID)
-          .where('name', '==', name)
-          .where('id', '!=', id)
-          .get();
-
-        const docs = snap.docs.map((doc) => doc.data());
-
-        const result = docs[0] || null;
-
-        return result;
-      } catch (err) {
-        throw new ApolloError(err);
-      }
-    },
-    async classList(_, args) {
-      try {
-        const { userID } = args;
-
-        const snapshot = await classesRef.where('owner', '==', userID).get();
-
-        const result = snapshot.docs.map((doc) => doc.data()) || null;
-        return result;
-      } catch (err) {
-        throw new ApolloError(err);
-      }
-    },
-    async sessionList(_, args) {
-      try {
-        const { userID } = args;
-
-        const snapshot = await sessionsRef.where('owner', '==', userID).get();
-
-        const result = snapshot.docs.map((doc) => doc.data()) || null;
-        return result.sort((session) => Number(session.startTime));
-      } catch (err) {
-        throw new ApolloError(err);
-      }
-    },
-    async csvDownload(_, args) {
-      try {
-        const { token } = args;
-
-        const result = await downloadsRef.doc(token).get();
-        return result.data();
-      } catch (err) {
-        throw new ApolloError(err);
-      }
-    },
-    async studentList(_, args) {
-      try {
-        const snapshot = await studentsRef.get();
-        const data = snapshot.docs.map((doc) => doc.data());
-
-        if (args.classID) {
-          return data.filter((student) => {
-            student.classes.includes(args.classID);
-          });
-        }
-
-        return data;
-      } catch (err) {
-        throw new ApolloError(err);
-      }
-    },
-    async studentsByID(_, args) {
-      try {
-        const { ids } = args;
-
-        const snapshot = await studentsRef.get();
-        const data = snapshot.docs.map((doc) => doc.data());
-
-        return data.filter((student) => ids.includes(student.id));
-      } catch (err) {
-        throw new ApolloError(err);
-      }
-    },
-    async session(_, args) {
-      try {
-        const { id } = args;
-
-        const snapshot = await sessionsRef.where('id', '==', id).get();
-
-        return snapshot.docs[0].data();
-      } catch (err) {
-        throw new ApolloError(err);
-      }
-    },
-    async sessionRecap(_, args) {
-      try {
-        const { id, userID } = args;
-
-        const snapshot = await sessionsRef
-          .where('owner', '==', userID)
-          .where('id', '==', id)
-          .get();
-
-        return snapshot.docs[0].data();
-      } catch (err) {
-        throw new ApolloError(err);
-      }
-    },
-  },
-  Mutation: {
+export default function mutations({
+  classesRef,
+  usersRef,
+  studentsRef,
+  downloadsRef,
+  sessionsRef,
+  db,
+}) {
+  return {
     async addUser(parent, args) {
       try {
         const { firstName, lastName, email, id } = args;
@@ -190,7 +18,7 @@ const resolvers = {
           .doc(id)
           .set({ firstName, lastName, email, id, classes: [] });
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
     async deleteUser(parent, args) {
@@ -198,7 +26,7 @@ const resolvers = {
         const { id } = args;
         await usersRef.doc(id).delete();
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
     async addStudents(_, args) {
@@ -220,7 +48,7 @@ const resolvers = {
 
         return studentsReadyForDB;
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
     async addClass(_, args) {
@@ -266,7 +94,7 @@ const resolvers = {
 
         return classQuery.data();
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
     async editClass(_, args) {
@@ -307,7 +135,7 @@ const resolvers = {
 
         return newClass;
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
     async deleteClass(_, args) {
@@ -318,7 +146,7 @@ const resolvers = {
 
         return { id };
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
     async removeClassFromStudents(_, args) {
@@ -364,7 +192,7 @@ const resolvers = {
 
         return newStudents;
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
     async csvDownload(_, args) {
@@ -388,7 +216,7 @@ const resolvers = {
           data,
         };
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
     async clearDownloads() {
@@ -405,7 +233,7 @@ const resolvers = {
 
         return result;
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
     async updateStudents(_, args) {
@@ -421,7 +249,7 @@ const resolvers = {
 
         return students;
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
     async addSession(_, args) {
@@ -467,7 +295,7 @@ const resolvers = {
 
         return session;
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
 
@@ -488,7 +316,7 @@ const resolvers = {
 
         return updatedSession.data();
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
 
@@ -510,10 +338,8 @@ const resolvers = {
 
         return updatedSession.data();
       } catch (err) {
-        throw new ApolloError(err);
+        throw new Error(err);
       }
     },
-  },
-};
-
-module.exports = resolvers;
+  };
+}

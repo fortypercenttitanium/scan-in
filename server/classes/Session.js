@@ -1,9 +1,7 @@
-const { nanoid } = require('nanoid');
-const SocketMessage = require('./SocketMessage');
-const query = require('../helperFunctions/queryHelper');
-const { gql } = require('graphql-request');
-
-module.exports = class Session {
+import SocketMessage from './SocketMessage.js';
+import query from '../helperFunctions/queryHelper.js';
+import { gql } from 'graphql-request';
+export default class Session {
   #sockets;
   #log;
   #studentList;
@@ -251,4 +249,4 @@ module.exports = class Session {
     this.#sockets.forEach((socket) => socket.close(1000, 'Session closed'));
     console.log('closing session ' + this.id);
   };
-};
+}

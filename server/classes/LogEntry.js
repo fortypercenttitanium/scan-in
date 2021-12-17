@@ -1,4 +1,4 @@
-const { nanoid } = require('nanoid');
+import { nanoid } from 'nanoid';
 
 class LogEntry {
   constructor({ event, payload }) {
@@ -9,4 +9,4 @@ class LogEntry {
   }
 }
 
-module.exports = LogEntry;
+export default LogEntry;

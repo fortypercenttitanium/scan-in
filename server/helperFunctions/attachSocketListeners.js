@@ -1,10 +1,10 @@
-const SocketMessage = require('../classes/SocketMessage');
-const SessionList = require('../classes/SessionList');
-const logMessage = require('./logMessage');
+import SocketMessage from '../classes/SocketMessage.js';
+import SessionList from '../classes/SessionList.js';
+import logMessage from './logMessage.js';
 
 const sessionList = new SessionList();
 
-module.exports = function attachSocketListeners(socket) {
+export default function attachSocketListeners(socket) {
   function createSession({ classID }) {
     sessionList.createSession(socket, classID);
   }
@@ -71,4 +71,4 @@ module.exports = function attachSocketListeners(socket) {
       console.error(err);
     }
   });
-};
+}

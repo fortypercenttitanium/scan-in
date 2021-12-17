@@ -1,13 +1,13 @@
-const passport = require('./auth/passport');
-const WebSocket = require('ws');
-const SocketMessage = require('./classes/SocketMessage');
-const attachSocketListeners = require('./helperFunctions/attachSocketListeners');
-const assignSocketId = require('./helperFunctions/assignSocketId');
-const socketCookieParser = require('./helperFunctions/socketCookieParser');
+import { WebSocketServer } from 'ws';
+import passport from './auth/passport.js';
+import SocketMessage from './classes/SocketMessage.js';
+import attachSocketListeners from './helperFunctions/attachSocketListeners.js';
+import assignSocketId from './helperFunctions/assignSocketId.js';
+import socketCookieParser from './helperFunctions/socketCookieParser.js';
 
 const PORT = process.env.SOCKET_PORT || 5001;
 
-const wss = new WebSocket.Server({ noServer: true });
+const wss = new WebSocketServer({ noServer: true });
 
 function heartbeat() {
   this.isAlive = true;
@@ -64,4 +64,4 @@ wss.on('close', function close() {
   clearInterval(interval);
 });
 
-module.exports = wss;
+export default wss;

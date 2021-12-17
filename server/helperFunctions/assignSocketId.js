@@ -1,5 +1,5 @@
-const { nanoid } = require('nanoid');
+import { nanoid } from 'nanoid';
 
-module.exports = function assignSocketId(socket) {
+export default function assignSocketId(socket) {
   socket.id = nanoid();
-};
+}

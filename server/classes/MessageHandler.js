@@ -1,5 +1,3 @@
-const { sessionList } = require('../socketServer');
-
 module.exports = class MessageHandler {
   constructor(socket, { sender, message, user }) {
     this.socket = socket;

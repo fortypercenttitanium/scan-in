@@ -1,8 +1,8 @@
-const Session = require('./Session');
-const { gql } = require('graphql-request');
-const query = require('../helperFunctions/queryHelper');
+import Session from './Session.js';
+import { gql } from 'graphql-request';
+import query from '../helperFunctions/queryHelper.js';
 
-module.exports = class SessionList {
+export default class SessionList {
   constructor() {
     this.sessions = {};
     setInterval(() => {
@@ -79,4 +79,4 @@ module.exports = class SessionList {
 
     expiredSessions.forEach((session) => this.closeSession(session));
   };
-};
+}

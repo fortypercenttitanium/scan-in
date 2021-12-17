@@ -1,12 +1,16 @@
-const path = require('path');
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
-const authRouter = require('./routes/authRouter');
-const dbRouter = require('./routes/dbRouter');
-const downloadRouter = require('./routes/downloadRouter');
-const apolloServer = require('./db/apolloServer');
-const wss = require('./socketServer');
+import path from 'path';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import authRouter from './routes/authRouter.js';
+import dbRouter from './routes/dbRouter.js';
+import apolloServer from './db/apolloServer.js';
+import wss from './socketServer.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 async function startServer() {
   const app = express();
@@ -28,7 +32,6 @@ async function startServer() {
 
   app.use('/auth', authRouter);
   app.use('/db', dbRouter);
-  app.use('/download', downloadRouter);
 
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../client/build/index.html'));

@@ -1,5 +1,5 @@
-const { request } = require('graphql-request');
-const { ApolloError } = require('apollo-server-express');
+import { request } from 'graphql-request';
+import { ApolloError } from 'apollo-server-express';
 
 const PORT = process.env.PORT || 5000;
 
@@ -16,4 +16,4 @@ async function query(q, variables) {
   }
 }
 
-module.exports = query;
+export default query;

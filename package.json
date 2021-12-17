@@ -9,7 +9,7 @@
     "dev:frontend": "NODE_ENV=development cd client && npm start",
     "dev:backend": "NODE_ENV=development nodemon --delay 500ms server/index",
     "build": "npm run install-all && cd client && npm run build",
-    "install-all": "npm i && cd client && npm i"
+    "install-all": "npm i && cd server && npm i && cd ../client && npm i"
   },
   "repository": {
     "type": "git",
@@ -21,33 +21,5 @@
   "bugs": {
     "url": "https://github.com/fortypercenttitanium/scan-in/issues"
   },
-  "homepage": "https://github.com/fortypercenttitanium/scan-in#readme",
-  "dependencies": {
-    "apollo-server": "^3.1.2",
-    "apollo-server-express": "^3.5.0",
-    "cookie-parser": "^1.4.5",
-    "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "firebase-admin": "^9.11.1",
-    "graphql": "^15.5.1",
-    "graphql-request": "^3.5.0",
-    "jsbarcode": "^3.11.5",
-    "jsonwebtoken": "^8.5.1",
-    "jspdf": "^2.3.1",
-    "jszip": "^3.7.1",
-    "nanoid": "^3.1.25",
-    "node-schedule": "^2.0.0",
-    "passport": "^0.4.1",
-    "passport-jwt": "^4.0.0",
-    "passport-microsoft": "^0.1.0",
-    "ws": "^8.1.0",
-    "xmldom": "^0.6.0"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.12"
-  },
-  "engines": {
-    "node": "16.x"
-  }
+  "homepage": "https://github.com/fortypercenttitanium/scan-in#readme"
 }

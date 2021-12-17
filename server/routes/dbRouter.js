@@ -1,9 +1,13 @@
-const router = require('express').Router();
-const passport = require('../auth/passport');
-const { gql } = require('graphql-request');
-const query = require('../helperFunctions/queryHelper');
-const { nanoid } = require('nanoid');
-require('dotenv').config();
+import { Router } from 'express';
+import passport from '../auth/passport.js';
+import jwt from 'jsonwebtoken';
+import { gql } from 'graphql-request';
+import query from '../helperFunctions/queryHelper.js';
+import dotenv from 'dotenv';
+import { nanoid } from 'nanoid';
+dotenv.config();
+
+const router = Router();
 
 router.use(passport.authenticate('jwt', { session: false }));
 
@@ -433,4 +437,4 @@ router.use('*', (req, res) => {
   res.redirect('/');
 });
 
-module.exports = router;
+export default router;
