@@ -61,7 +61,9 @@ function App() {
                 )}
               </Route>
               <Route path="/dashboard">
-                <HomeLayout />
+                <AuthRedirect>
+                  <HomeLayout />
+                </AuthRedirect>
               </Route>
               <Route path="/session/:id">
                 <AuthRedirect>

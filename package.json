@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server/index.js",
     "dev:frontend": "NODE_ENV=development cd client && npm start",
-    "dev:backend": "NODE_ENV=development nodemon --delay 500ms server/index",
+    "dev:backend": "./kill_server.sh && NODE_ENV=development nodemon --delay 500ms server/index",
     "build": "npm run install-all && cd client && npm run build",
     "install-all": "npm i && cd server && npm i && cd ../client && npm i"
   },
