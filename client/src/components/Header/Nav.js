@@ -25,7 +25,7 @@ function Nav() {
   return (
     <Box sx={{ display: 'flex', my: 'auto', ml: 'auto', mr: '24px' }}>
       <Box>
-        {userData ? (
+        {userData && !userData.loading ? (
           <Box
             sx={{
               display: 'flex',
