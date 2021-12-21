@@ -7,8 +7,8 @@ export default function parseStudentData(data) {
 
   const split = data.split(',').map((data) => data.trim());
   const lastName = split[0].trim();
-  const id = split[1].replace(/\(|\)/g, '');
   const endFirstIndex = split[1].indexOf('(');
+  const id = split[1].slice(endFirstIndex).replace(/\(|\)/g, '');
   const firstName = split[1].slice(0, endFirstIndex).trim();
 
   return {

@@ -118,6 +118,7 @@ router.post('/studentIDs', async (req, res, next) => {
 router.post('/students', async (req, res, next) => {
   try {
     const { students } = req.body;
+    console.log(1, students);
 
     const GET_STUDENTS_BY_IDS = gql`
       query getStudentsByID($ids: [ID!]!) {
@@ -129,9 +130,13 @@ router.post('/students', async (req, res, next) => {
 
     const ids = students.map((student) => student.id);
 
+    console.log(2, ids);
+
     const { studentsByID: currentStudents } = await query(GET_STUDENTS_BY_IDS, {
       ids,
     });
+
+    console.log(3, currentStudents);
 
     const newStudents = students.filter(
       (student) =>
