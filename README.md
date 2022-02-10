@@ -13,3 +13,7 @@ This project was designed as a solution to my frustration with the tediousness o
 ## How To Use
 
 Create a class, add your students manually or by pasting data from OnCourse, then "Take Attendance" for your class. Students can manually enter their student ID on the numpad or you can hook up a USB barcode scanner to your computer to scan students in.
+
+## Auth
+
+This app currently only uses Microsoft OAuth as that met my needs at the time. I do not plan to continue developing this project for the time being, so I will not be adding additional authorization strategies.
