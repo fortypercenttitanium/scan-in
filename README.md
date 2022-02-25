@@ -1,5 +1,8 @@
 # scan-in
 
+## Link
+https://scan-in.herokuapp.com/
+
 ## Description
 
 An application to make taking class attendance faster and easier.
