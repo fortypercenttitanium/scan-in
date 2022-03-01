@@ -44,14 +44,15 @@ const microsoftStrategy = new MicrosoftStrategy(
     clientID: process.env.MICROSOFT_CLIENT_ID,
     clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
     callbackURL,
-    scope: ['openid', 'profile', 'email', 'offline_access'],
+    scope: ['user.read'],
   },
   async function (accessToken, refreshToken, profile, done) {
     try {
       const { name, emails } = profile;
+      console.log(profile);
 
       // find a user in the database
-      const { user } = await query(GET_USER_BY_EMAIL, {
+      let { user } = await query(GET_USER_BY_EMAIL, {
         email: emails[0].value,
       });
 

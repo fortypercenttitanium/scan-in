@@ -12,6 +12,7 @@ export default function queries({
       const { email } = args;
       try {
         const snapshot = await usersRef.where('email', '==', email).get();
+        if (snapshot.empty) return null;
         const user = snapshot.docs[0].data() || null;
         return user;
       } catch (err) {
