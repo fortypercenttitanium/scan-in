@@ -159,6 +159,7 @@ export default class Session {
             classID
             startTime
             endTime
+            className
             log {
               event
               payload
