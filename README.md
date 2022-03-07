@@ -1,7 +1,14 @@
 # scan-in
 
 ## Link
+
 https://scan-in.herokuapp.com/
+
+## Pictures
+
+![Scan in Dashboard](screenshots/scan_in_1.png)
+![Scan in Attendance Session](screenshots/scan_in_2.png)
+![Scan in Session Recap](screenshots/scan_in_3.png)
 
 ## Description
 
